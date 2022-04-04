@@ -1,16 +1,19 @@
 name: build-and-push
 
 on:
-  push:
-    branches:
-      - 'jst/gh-actions'
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+
 permissions:
       id-token: write    # Required for aws role assumption
       contents: write    # This is required for actions/checkout@v1
+
 jobs:
   docker:
-    runs-on: ubuntu-latest
-    #runs-on: self-hosted
+    runs-on: self-hosted
     steps:
       -
         name: Set up Docker Context for Buildx
@@ -36,4 +39,4 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/flowcode-generator-server:${{ github.run_number }}
+            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:${{ github.run_number }}
