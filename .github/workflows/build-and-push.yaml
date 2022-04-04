@@ -9,7 +9,7 @@ on:
 
 permissions:
       id-token: write    # Required for aws role assumption
-      contents: write    # This is required for actions/checkout@v1
+      contents: write    # This is required for actions/checkout@v2
 
 jobs:
   docker:
@@ -40,3 +40,19 @@ jobs:
           push: true
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:${{ github.run_number }}
+
+  deploy:
+    runs-on: self-hosted
+    steps:
+      -
+        name: Checkout sample-infra-kubernetes repo
+        uses: actions/checkout@v2
+        with:
+          repository: dtx-company/sample-infra-kubernetes
+      -
+        name: Update image tag
+        run: |
+          git config --local user.email
+          git config --local user.name
+          git commit -m "auto: bump ${{ inputs.service-name }} to ${{ github.run_number }} for fc-services-dev, fc-services-stg, fc-services-preprod"
+
