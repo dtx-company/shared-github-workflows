@@ -33,7 +33,7 @@ jobs:
     steps:
       -
         name: "Check IMAGE_TAG"
-        run: "echo $IMAGE_TAG"
+        run: "echo ${{ env.IMAGE_TAG }}"
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
@@ -59,7 +59,7 @@ jobs:
           push: true
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           tags: |
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:$IMAGE_TAG
+            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:${{ env.IMAGE_TAG }}
       -
         name: Checkout sample-infra-kubernetes repo
         uses: actions/checkout@v2
@@ -74,14 +74,14 @@ jobs:
         run: |
           git config --local user.name ${{ github.event.pusher.name }}
           git config --local user.email ${{ github.event.pusher.email }}
-          git checkout -b "auto/bump-${{ inputs.service_name }}-to-$IMAGE_TAG"
+          git checkout -b "auto/bump-${{ inputs.service_name }}-to-${{ env.IMAGE_TAG }}"
 
           filename="cloud/aws/fc-services-dev/use1/primary/${{ inputs.team_name }}/applications/${{ inputs.service_name }}/values.yaml"
-          yq  -i eval '.fc-service.process.tag = "$IMAGE_TAG"' ${filename}
+          yq  -i eval '.fc-service.process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
 
           git diff
           git add ${filename}
-          git commit -m "cicd-auto: nonprod bump ${{ inputs.service_name }} to $IMAGE_TAG"
+          git commit -m "cicd-auto: nonprod bump ${{ inputs.service_name }} to ${{ env.IMAGE_TAG }}"
           git show-ref
           git push origin HEAD
           git request-pull origin/trunk ./
