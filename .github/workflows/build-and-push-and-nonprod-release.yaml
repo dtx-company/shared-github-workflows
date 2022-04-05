@@ -52,6 +52,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO }}
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:${{ github.run_number }}
       -
