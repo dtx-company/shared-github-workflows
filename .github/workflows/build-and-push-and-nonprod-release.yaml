@@ -18,7 +18,7 @@ on:
         required: true
       JFROG_FLOWCODE_FC_DOCKER_REPO:
         required: true
-      PERSONAL_ACCESS_TOKEN_REPO:
+      PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
 
 permissions:
@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO }}
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:${{ github.run_number }}
       -
@@ -60,13 +60,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: dtx-company/sample-infra-kubernetes
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+      -
+        name: Install yq
+        uses: chrisdickinson/setup-yq@latest
       -
         name: Update the image tag in fc-services-dev and push a branch
         run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod a+x /usr/local/bin/yq
-
           git config --local user.name ${{ github.event.pusher.name }}
           git config --local user.email ${{ github.event.pusher.email }}
           git checkout -b "auto/bump-${{ inputs.service_name }}-to-${{ github.run_number }}"
