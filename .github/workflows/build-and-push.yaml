@@ -1,4 +1,4 @@
-name: build-and-push
+name: build-and-push-and-nonprod-release
 
 on:
   workflow_call:
@@ -9,10 +9,10 @@ on:
 
 permissions:
       id-token: write    # Required for aws role assumption
-      contents: write    # This is required for actions/checkout@v2
+      contents: write    # This is required for actions/checkout@v1
 
 jobs:
-  docker:
+  cd:
     runs-on: self-hosted
     steps:
       -
@@ -39,20 +39,31 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:${{ github.run_number }}
-
-  deploy:
-    runs-on: self-hosted
-    steps:
+            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/flowcode-generator-server:${{ github.run_number }}
       -
         name: Checkout sample-infra-kubernetes repo
         uses: actions/checkout@v2
         with:
           repository: dtx-company/sample-infra-kubernetes
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO }}
       -
-        name: Update image tag
+        name: Update the image tag in fc-services-dev and push a branch
         run: |
-          git config --local user.email
-          git config --local user.name
-          git commit -m "auto: bump ${{ inputs.service-name }} to ${{ github.run_number }} for fc-services-dev, fc-services-stg, fc-services-preprod"
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
+          git config --local user.name ${{ github.event.pusher.name }}
+          git config --local user.email ${{ github.event.pusher.email }}
+          git checkout -b "auto/bump-flowcode-generator-server-to-${{ github.run_number }}"
+
+          filename="cloud/aws/fc-services-dev/use1/primary/backend/applications/flowcode-generator-server/values.yaml"
+          yq  -i eval '.fc-service.process.tag = "${{ github.run_number }}"' ${filename}
+
+          git diff
+          git add ${filename}
+          git commit -m "auto: bump flowcode-generator-server to ${{ github.run_number }} for fc-services-dev"
+          git show-ref
+          git push origin HEAD
+          git request-pull origin/trunk ./
+
 
