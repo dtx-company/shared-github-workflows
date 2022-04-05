@@ -12,19 +12,14 @@ on:
     secrets:
       JFROG_FLOWCODE_SERVER_NAME:
         required: true
-        type: string
       JFROG_FLOWCODE_FC_DOCKER_USERNAME:
         required: true
-        type: string
       JFROG_FLOWCODE_FC_DOCKER_PASSWORD:
         required: true
-        type: string
       JFROG_FLOWCODE_FC_DOCKER_REPO:
         required: true
-        type: string
       PERSONAL_ACCESS_TOKEN_REPO:
         required: true
-        type: string
 
 permissions:
       id-token: write    # Required for aws role assumption
