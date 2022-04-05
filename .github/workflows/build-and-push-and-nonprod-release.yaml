@@ -77,7 +77,7 @@ jobs:
           git checkout -b "auto/bump-${{ inputs.service_name }}-to-${{ env.IMAGE_TAG }}"
 
           filename="cloud/aws/fc-services-dev/use1/primary/${{ inputs.team_name }}/applications/${{ inputs.service_name }}/values.yaml"
-          yq  -i eval '.fc-service.process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
+          yq  -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
 
           git diff
           git add ${filename}
