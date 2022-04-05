@@ -69,11 +69,11 @@ jobs:
           repository: dtx-company/sample-infra-kubernetes
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
       -
-        name: Install yq
-        uses: chrisdickinson/setup-yq@latest
-      -
-        name: Update the image tag in fc-services-dev and push a branch
+        name: Update the image tag in fc-services-dev and create a PR
         run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
           git config --local user.name ${{ github.event.pusher.name }}
           git config --local user.email ${{ github.event.pusher.email }}
           git checkout -b "auto/bump-${{ inputs.service }}-to-${{ env.IMAGE_TAG }}"
