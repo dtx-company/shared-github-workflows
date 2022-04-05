@@ -3,7 +3,10 @@ name: build-and-push-and-nonprod-release
 on:
   workflow_call:
     inputs:
-      service_name:
+      service_name:      # Example: "ithaca"
+        required: true
+        type: string
+      team_name:         # Example: "revenue"
         required: true
         type: string
 
@@ -39,7 +42,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/flowcode-generator-server:${{ github.run_number }}
+            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service_name }}:${{ github.run_number }}
       -
         name: Checkout sample-infra-kubernetes repo
         uses: actions/checkout@v2
@@ -54,14 +57,14 @@ jobs:
 
           git config --local user.name ${{ github.event.pusher.name }}
           git config --local user.email ${{ github.event.pusher.email }}
-          git checkout -b "auto/bump-flowcode-generator-server-to-${{ github.run_number }}"
+          git checkout -b "auto/bump-${{ inputs.service_name }}-to-${{ github.run_number }}"
 
-          filename="cloud/aws/fc-services-dev/use1/primary/backend/applications/flowcode-generator-server/values.yaml"
+          filename="cloud/aws/fc-services-dev/use1/primary/${{ inputs.team_name }}/applications/${{ inputs.service_name }}/values.yaml"
           yq  -i eval '.fc-service.process.tag = "${{ github.run_number }}"' ${filename}
 
           git diff
           git add ${filename}
-          git commit -m "auto: bump flowcode-generator-server to ${{ github.run_number }} for fc-services-dev"
+          git commit -m "auto: bump ${{ inputs.service_name }} to ${{ github.run_number }} for fc-services-dev"
           git show-ref
           git push origin HEAD
           git request-pull origin/trunk ./
