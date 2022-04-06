@@ -32,9 +32,6 @@ jobs:
       IMAGE_TAG: ${{ github.run_number }}
     steps:
       -
-        name: "Check IMAGE_TAG"
-        run: "echo ${{ env.IMAGE_TAG }}"
-      -
         name: Set up Docker Context for Buildx
         id: buildx-context
         run: |
@@ -58,6 +55,7 @@ jobs:
         with:
           push: true
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          # TODO: these cache settings don't seem to be doing much...
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
@@ -71,20 +69,24 @@ jobs:
       -
         name: Update the image tags in values.yaml and push commit
         run: |
-          echo "\n\nInstalling yq..."
+          echo; echo;
+          echo "Installing yq..."
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod a+x /usr/local/bin/yq
 
-          echo "\n\nSetting git config..."
+          echo; echo;
+          echo "Setting git config..."
           git config --local user.name ${{ github.event.pusher.name }}
           git config --local user.email ${{ github.event.pusher.email }}
 
-          echo "\n\nUpdating values.yaml..."
+          echo; echo;
+          echo "Updating values.yaml..."
           filename="cloud/aws/fc-services-dev/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
           yq  -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
           git diff
 
-          echo "\n\nPushing to git..."
+          echo; echo;
+          echo "Pushing to git..."
           git add ${filename}
           git commit -m "cicd-auto: nonprod bump ${{ inputs.service }} to ${{ env.IMAGE_TAG }}"
           git push origin HEAD
