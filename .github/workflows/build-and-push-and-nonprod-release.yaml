@@ -63,29 +63,28 @@ jobs:
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ env.IMAGE_TAG }}
       -
-        name: Checkout sample-infra-kubernetes repo
+        name: Checkout kubernetes infra repo
         uses: actions/checkout@v2
         with:
           repository: dtx-company/sample-infra-kubernetes
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
       -
-        name: Update the image tag in fc-services-dev and create a PR
+        name: Update the image tags in values.yaml and push commit
         run: |
+          echo "\n\nInstalling yq..."
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod a+x /usr/local/bin/yq
 
+          echo "\n\nSetting git config..."
           git config --local user.name ${{ github.event.pusher.name }}
           git config --local user.email ${{ github.event.pusher.email }}
-          git checkout -b "auto/bump-${{ inputs.service }}-to-${{ env.IMAGE_TAG }}"
 
+          echo "\n\nUpdating values.yaml..."
           filename="cloud/aws/fc-services-dev/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
           yq  -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
-
           git diff
+
+          echo "\n\nPushing to git..."
           git add ${filename}
           git commit -m "cicd-auto: nonprod bump ${{ inputs.service }} to ${{ env.IMAGE_TAG }}"
-          git show-ref
           git push origin HEAD
-          git request-pull origin/trunk ./
-
-
