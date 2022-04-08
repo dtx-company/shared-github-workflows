@@ -55,7 +55,6 @@ jobs:
         with:
           push: true
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-          # TODO: these cache settings don't seem to be doing much...
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
