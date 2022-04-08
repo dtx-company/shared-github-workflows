@@ -64,7 +64,7 @@ jobs:
         name: Checkout kubernetes infra repo
         uses: actions/checkout@v2
         with:
-          repository: dtx-company/sample-infra-kubernetes
+          repository: dtx-company/fc-infra-kubernetes
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
       -
         name: Update the image tags in values.yaml and push commit
