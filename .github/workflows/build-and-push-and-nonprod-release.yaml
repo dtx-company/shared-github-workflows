@@ -80,10 +80,10 @@ jobs:
 
           echo; echo;
           echo "Updating values.yaml..."
-          awsenvs=( "dev" "stg" "preprod" )
+          awsenvs=( "fc-services-dev" "fc-services-stg" "fc-services-preprod" )
           for awsenv in "${awsenvs[@]}"
           do
-            filename="cloud/aws/fc-services-${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+            filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
             yq -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
             git add ${filename}
           done
