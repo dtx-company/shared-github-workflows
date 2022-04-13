@@ -80,12 +80,16 @@ jobs:
 
           echo; echo;
           echo "Updating values.yaml..."
-          filename="cloud/aws/fc-services-dev/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
-          yq  -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
-          git diff
+          awsenvs=( "dev" "stg" "preprod" )
+          for awsenv in "${awsenvs[@]}"
+          do
+            filename="cloud/aws/fc-services-${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+            yq -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
+            git add ${filename}
+          done
 
           echo; echo;
           echo "Pushing to git..."
-          git add ${filename}
+          git diff HEAD
           git commit -m "cicd-auto: nonprod bump ${{ inputs.service }} to ${{ env.IMAGE_TAG }}"
           git push origin HEAD
