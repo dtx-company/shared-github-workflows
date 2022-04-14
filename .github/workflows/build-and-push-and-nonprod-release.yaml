@@ -27,7 +27,7 @@ permissions:
 
 jobs:
   cd:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       IMAGE_TAG: ${{ github.run_number }}
     steps:
