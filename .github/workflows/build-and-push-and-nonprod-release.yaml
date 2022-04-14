@@ -89,6 +89,7 @@ jobs:
 
           echo; echo;
           echo "Pushing to git..."
+          git diff HEAD
           if [[ $(git diff HEAD) ]]; then
             git commit -m "cicd-auto: nonprod bump ${{ inputs.service }} to ${{ env.IMAGE_TAG }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
             git push origin HEAD
