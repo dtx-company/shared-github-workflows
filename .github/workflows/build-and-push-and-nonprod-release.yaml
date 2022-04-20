@@ -79,7 +79,7 @@ jobs:
 
           echo; echo;
           echo "Updating values.yaml..."
-          awsenvs=( "fc-services-dev" "fc-services-stg" "fc-services-preprod" )
+          awsenvs=( "fc-services-stg" "fc-services-preprod" )
           for awsenv in "${awsenvs[@]}"
           do
             filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
