@@ -2,10 +2,16 @@ name: conventional-pr-title
 
 on:
   workflow_call:
+    secrets:
+    # Reusable workflows must have secrets passed explicitly in.
+    # GITHUB_TOKEN is available automatically to the calling workflow.
+    #   See https://github.blog/changelog/2021-04-20-github-actions-control-permissions-for-github_token/#:~:text=GitHub%20Actions%20now%20lets%20you,token%20when%20a%20job%20completes.
+    GITHUB_TOKEN:
+      required: true
 
 jobs:
   validate:
-    name: Validate PR title
+    name: validate-pr-title
     runs-on: ubuntu-latest
     steps:
       - uses: amannn/action-semantic-pull-request@v4
@@ -13,3 +19,5 @@ jobs:
           # Configuration docs: https://github.com/marketplace/actions/semantic-pull-request#configuration
           validateSingleCommit: true
           validateSingleCommitMatchesPrTitle: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
