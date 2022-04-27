@@ -23,7 +23,6 @@ on:
 
 permissions:
       id-token: write    # Required for aws role assumption
-      contents: write    # This is required for actions/checkout@v1
 
 jobs:
   cd:
@@ -78,12 +77,12 @@ jobs:
           git config --local user.email ${{ github.event.pusher.email }}
 
           echo; echo;
-          echo "Updating values.yaml..."
           awsenvs=( "fc-services-stg" "fc-services-preprod" )
           for awsenv in "${awsenvs[@]}"
           do
             filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
-            yq -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
+            echo "Updating ${filename}..."
+            yq -i eval '.fc-service.process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
             git add ${filename}
           done
 
