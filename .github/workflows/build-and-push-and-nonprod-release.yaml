@@ -83,7 +83,7 @@ jobs:
           do
             filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
             echo "Updating ${filename}..."
-            yq -i eval '.fc-service.process.tag = ${{ env.IMAGE_TAG }}' ${filename}
+            yq -i eval '.fc-service.process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
             git add ${filename}
           done
 
