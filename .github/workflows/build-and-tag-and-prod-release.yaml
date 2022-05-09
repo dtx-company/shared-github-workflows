@@ -51,6 +51,9 @@ jobs:
         with:
           node-version: 'lts/*'
       -
+        name: Checkout repo
+        uses: actions/checkout@v2
+      -
         name: Create Github Release and Notes
         id: publish_release
         run: |
