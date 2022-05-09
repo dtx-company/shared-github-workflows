@@ -52,48 +52,57 @@ jobs:
           node-version: 'lts/*'
       -
         name: Create Github Release and Notes
-        # TODO: there must be more to this
-        run: npx semantic-release
-      -
-        name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: | # TODO: get the tag from the output of semantic-release
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ env.IMAGE_TAG }}
-      -
-        # TODO: refactor this so it can be shared across the two workflows.
-        name: Update the image tags in values.yaml and push commit
+        id: publish_release
         run: |
-          echo "Installing yq..."
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod a+x /usr/local/bin/yq
+          npx semantic-release@19
+          echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
+      -
+        name: Test tag name worked
+        run: |
+          echo "${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ steps.publish_release.outputs.release_tag }}"
 
-          echo; echo;
-          echo "Setting git config..."
-          git config --local user.name ${{ github.event.pusher.name }}
-          git config --local user.email ${{ github.event.pusher.email }}
+      # -
+      #   name: Build and push
+      #   id: docker_build
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     push: true
+      #     github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
+      #     tags: |
+      #       ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ steps.publish_release.outputs.release_tag }}
+      # -
+      #   # This is heavily duplicated with the build-and-push-and-nonprod-release.yaml workflow but it cannot
+      #   # be factored out and reused because a reusable workflow cannot call another reusable workflow
+      #   # according to the docs: https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/reusing-workflows#limitations
+      #   name: Update the image tags in values.yaml and push commit
+      #   run: |
+      #     echo "Installing yq..."
+      #     sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+      #     sudo chmod a+x /usr/local/bin/yq
 
-          echo; echo;
-          awsenvs=( "fc-services-stg" "fc-services-preprod" )
-          for awsenv in "${awsenvs[@]}"
-          do
-            filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
-            echo "Updating ${filename}..."
-            yq -i eval '.fc-service.process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
-            git add ${filename}
-          done
+      #     echo; echo;
+      #     echo "Setting git config..."
+      #     git config --local user.name ${{ github.actor }}
+      #     git config --local user.email ${{ github.actor }}
 
-          echo; echo;
-          echo "Pushing to git..."
-          git diff HEAD
-          if [[ $(git diff HEAD) ]]; then
-            git commit -m "cicd-auto: nonprod bump ${{ inputs.service }} to ${{ env.IMAGE_TAG }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-            git push origin HEAD
-          else
-            echo "Nothing to push"
-          fi
+      #     echo; echo;
+      #     awsenvs=( "fc-services-prod" )
+      #     for awsenv in "${awsenvs[@]}"
+      #     do
+      #       filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+      #       echo "Updating ${filename}..."
+      #       yq -i eval '.fc-service.process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
+      #       git add ${filename}
+      #     done
+
+      #     echo; echo;
+      #     echo "Pushing to git..."
+      #     git diff HEAD
+      #     if [[ $(git diff HEAD) ]]; then
+      #       git commit -m "cicd-auto: nonprod bump ${{ inputs.service }} to ${{ env.IMAGE_TAG }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+      #       git push origin HEAD
+      #     else
+      #       echo "Nothing to push"
+      #     fi
