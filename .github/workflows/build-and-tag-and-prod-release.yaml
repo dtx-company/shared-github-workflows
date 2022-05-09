@@ -53,11 +53,8 @@ jobs:
       -
         name: Create Github Release and Notes
         id: publish_release
-        with:
-          # TODO: see if these needs to be the special token or if we can use the built-in one
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          npx semantic-release@19
+          GITHUB_TOKEN=${{github.token}} npx semantic-release@19
           echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
       -
         name: Test tag name worked
