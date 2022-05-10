@@ -27,7 +27,7 @@ jobs:
     steps:
       -
         # Checkout is required for publish_release step below to work.
-        name: Checkout repository
+        name: Checkout service repository
         uses: actions/checkout@v2
       -
         name: Set up Docker Context for Buildx
@@ -72,6 +72,12 @@ jobs:
           cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ steps.publish_release.outputs.release_tag }}
+      -
+        name: Checkout kubernetes infra repo
+        uses: actions/checkout@v2
+        with:
+          repository: dtx-company/fc-infra-kubernetes
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
       -
         # This is heavily duplicated with the nonprod workflow but it cannot be factored out
         # and reused because a reusable workflow cannot call another reusable workflow according to the docs:
