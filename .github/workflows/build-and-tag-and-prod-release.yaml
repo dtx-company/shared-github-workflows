@@ -90,8 +90,8 @@ jobs:
 
           echo; echo;
           echo "Setting git config..."
-          git config --local user.name ${{ github.event.sender.name }}
-          git config --local user.email ${{ github.event.sender.email }}
+          git config --local user.name "${{ github.event.sender.login }}"
+          git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
 
           echo; echo;
           awsenvs=( "fc-services-prod" )
