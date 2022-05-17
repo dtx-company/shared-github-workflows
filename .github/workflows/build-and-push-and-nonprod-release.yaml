@@ -9,6 +9,10 @@ on:
       project:
         required: true
         type: string
+      dockerfilepath:
+        required: false
+        type: string
+        default: "./Dockerfile" # Dockerfile in the root of the repo
     secrets:
       JFROG_FLOWCODE_SERVER_NAME:
         required: true
@@ -53,6 +57,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          file: ${{ inputs.dockerfilepath }}
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
