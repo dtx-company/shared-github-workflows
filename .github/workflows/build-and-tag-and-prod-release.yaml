@@ -27,7 +27,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       -
         # Checkout is required for publish_release step below to work.
