@@ -90,7 +90,7 @@ Add a new file into the root of the service repo called `.releaserc`, with the c
 }
 ```
 
-Add a new workflow in the service repo under `.github/workflows/build-and-push-and-nonprod-release.yaml`, with the content below.
+Add a new workflow in the service repo under `.github/workflows/build-and-tag-and-prod-release.yaml`, with the content below.
 * Replace `<service-name>` with the name of the service, which should match the repository name exactly.
 * Replace `<project-name>` with one of {backend, frontend, verticals, ml}.
 
