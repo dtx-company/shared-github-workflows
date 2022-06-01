@@ -64,8 +64,8 @@ jobs:
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ env.IMAGE_TAG }}
           # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
-          build-args:
-            - GITHUB_USERNAME=fc-cicd-rw
+          build-args: |
+            GITHUB_USERNAME=fc-cicd-rw
           secrets: |
             GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
 
