@@ -6,12 +6,12 @@ on:
       service:
         required: true
         type: string
+      project:
+        required: true
+        type: string
       extra-deployments:
         required: false
         description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
-        type: string
-      project:
-        required: true
         type: string
       dockerfilepath:
         required: false
