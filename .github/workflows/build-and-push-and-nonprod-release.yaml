@@ -96,20 +96,11 @@ jobs:
           for awsenv in "${awsenvs[@]}"
           do
             filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
-            echo "Extra deployments ${{ inputs.extra-deployments }}"
-            test='one,two,three'
-            testarr=(${test//,/ })
-            echo $testarr
-            IFS=, read -ra testarr2 <<< "$test"
-            echo testarr2
-
-            IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}" # split by comma into an array
-            echo "Parsed extra deployments ${deployments}"
-            deployments+=("fc-service")                           # fc-service is always included
-            echo "Updating ${filename} for deployments ${deployments}..."
+            IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
+            deployments+=("fc-service")                                       # fc-service is always included
+            echo "Updating ${filename} for deployments ${deployments[*]}..."
             for d in "${deployments[@]}"
             do
-              echo "${d}"
               path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ env.IMAGE_TAG }}"'  ${filename}
             done
             git add ${filename}
