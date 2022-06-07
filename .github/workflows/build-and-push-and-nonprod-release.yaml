@@ -100,13 +100,17 @@ jobs:
             test='one,two,three'
             testarr=(${test//,/ })
             echo $testarr
+            IFS=, read -ra testarr2 <<< "$test"
+            echo testarr2
 
-            deployments=(${${{ inputs.extra-deployments }}//,/ }) # split by comma into an array
+            IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}" # split by comma into an array
+            echo "Parsed extra deployments ${deployments}"
             deployments+=("fc-service")                           # fc-service is always included
             echo "Updating ${filename} for deployments ${deployments}..."
             for d in "${deployments[@]}"
             do
-              yq -i eval '."${d}".process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
+              echo "${d}"
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ env.IMAGE_TAG }}"'  ${filename}
             done
             git add ${filename}
           done
