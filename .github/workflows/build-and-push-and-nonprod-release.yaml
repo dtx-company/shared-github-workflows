@@ -97,7 +97,10 @@ jobs:
           do
             filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
             echo "Extra deployments ${{ inputs.extra-deployments }}"
-            echo (${"one,two,three"//,/ }) # test
+            test='one,two,three'
+            testarr=(${test//,/ })
+            echo $testarr
+
             deployments=(${${{ inputs.extra-deployments }}//,/ }) # split by comma into an array
             deployments+=("fc-service")                           # fc-service is always included
             echo "Updating ${filename} for deployments ${deployments}..."
