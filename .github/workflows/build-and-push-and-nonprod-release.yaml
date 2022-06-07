@@ -6,6 +6,10 @@ on:
       service:
         required: true
         type: string
+      extra-deployments:
+        required: false
+        description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
+        type: string
       project:
         required: true
         type: string
@@ -82,18 +86,23 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod a+x /usr/local/bin/yq
 
-          echo; echo;
+          echo;
           echo "Setting git config..."
           git config --local user.name ${{ github.event.pusher.name }}
           git config --local user.email ${{ github.event.pusher.email }}
 
-          echo; echo;
+          echo;
           awsenvs=( "fc-services-stg" "fc-services-preprod" )
           for awsenv in "${awsenvs[@]}"
           do
             filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
-            echo "Updating ${filename}..."
-            yq -i eval '.fc-service.process.tag = "${{ env.IMAGE_TAG }}"' ${filename}
+            IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
+            deployments+=("fc-service")                                       # fc-service is always included
+            echo "Updating ${filename} for deployments ${deployments[*]}..."
+            for d in "${deployments[@]}"
+            do
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ env.IMAGE_TAG }}"'  ${filename}
+            done
             git add ${filename}
           done
 
