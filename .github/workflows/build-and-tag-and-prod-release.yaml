@@ -112,7 +112,7 @@ jobs:
             echo "Updating ${filename} for deployments ${deployments[*]}..."
             for d in "${deployments[@]}"
             do
-              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ env.IMAGE_TAG }}"'  ${filename}
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ steps.publish_release.outputs.release_tag }}"'  ${filename}
             done
             git add ${filename}
           done
