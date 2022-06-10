@@ -81,6 +81,11 @@ jobs:
           cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ steps.publish_release.outputs.release_tag }}
+          # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
+          build-args: |
+            GITHUB_USERNAME=fc-cicd-rw
+          secrets: |
+            GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
       -
         name: Checkout kubernetes infra repo
         uses: actions/checkout@v2
