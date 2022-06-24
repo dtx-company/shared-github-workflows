@@ -28,6 +28,10 @@ on:
         required: true
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
+      JFROG_PYPI_USERNAME:
+        required: false
+      JFROG_PYPI_PASSWORD:
+        required: false
 
 jobs:
   release:
@@ -84,6 +88,8 @@ jobs:
           # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
           build-args: |
             GITHUB_USERNAME=fc-cicd-rw
+            JFROG_PYPI_USERNAME=${{ secrets.JFROG_PYPI_USERNAME }}
+            JFROG_PYPI_PASSWORD=${{ secrets.JFROG_PYPI_PASSWORD }}
           secrets: |
             GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
       -
