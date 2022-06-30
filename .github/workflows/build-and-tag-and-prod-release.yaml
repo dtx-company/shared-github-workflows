@@ -17,6 +17,11 @@ on:
         required: false
         type: string
         default: "./Dockerfile" # Dockerfile in the root of the repo
+      awsenvs:
+        required: false
+        description: "comma separate list of envs to release to, defaults to 'fc-services-prod/use1'"
+        type: string
+        default: "fc-services-prod/use1"
     secrets:
       JFROG_FLOWCODE_SERVER_NAME:
         required: true
@@ -114,10 +119,10 @@ jobs:
           git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
 
           echo;
-          awsenvs=( "fc-services-prod" )
+          IFS=, read -ra awsenvs <<< "${{ inputs.awsenvs }}" # get list of envs to release to
           for awsenv in "${awsenvs[@]}"
           do
-            filename="cloud/aws/${awsenv}/use1/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+            filename="cloud/aws/${awsenv}/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
             IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
             deployments+=("fc-service")                                       # fc-service is always included
             echo "Updating ${filename} for deployments ${deployments[*]}..."
