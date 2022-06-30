@@ -92,6 +92,9 @@ jobs:
         name: Checkout repo to run post-build script
         if: inputs.post-build-script != ''
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+
 
       -
         name: Run post-build script
