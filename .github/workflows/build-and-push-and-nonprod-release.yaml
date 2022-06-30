@@ -90,7 +90,7 @@ jobs:
 
       -
         name: Run post-build script
-        if: inputs.post-build-script != ""
+        if: inputs.post-build-script != ''
         run: |
           ./${{ inputs.post-build-script }}
 
