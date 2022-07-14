@@ -96,6 +96,11 @@ jobs:
       -
         name: Run post-build script
         if: inputs.post-build-script != ''
+        env:
+          # Don't edit or delete these without confirming it won't break the scripts that use them.
+          JFROG_FLOWCODE_SERVER_NAME: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
+          JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}
+          SERVICE_NAME: ${{ inputs.service }}
         run: |
           ./${{ inputs.post-build-script }}
       -
