@@ -3,6 +3,11 @@ name: build-and-push-and-nonprod-release
 on:
   workflow_call:
     inputs:
+      runner:
+        required: false
+        type: string
+        default: "self-hosted"
+        description: "the github runner to run on, options are {ubuntu-latest, self-hosted, frontend}"
       service:
         required: true
         type: string
@@ -59,7 +64,7 @@ permissions:
 
 jobs:
   cd:
-    runs-on: self-hosted
+    runs-on: ${{ inputs.runner }}
     env:
       IMAGE_TAG: ${{ github.sha }}
     steps:
