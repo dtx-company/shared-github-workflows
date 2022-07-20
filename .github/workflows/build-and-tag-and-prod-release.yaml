@@ -75,6 +75,7 @@ jobs:
         name: Create Github Release and Notes
         id: publish_release
         run: |
+          npm i conventional-changelog-conventionalcommits
           GITHUB_TOKEN=${{ github.token }} npx semantic-release@19
           echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
       -
