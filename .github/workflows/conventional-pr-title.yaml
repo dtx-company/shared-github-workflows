@@ -18,7 +18,6 @@ jobs:
             ci
             docs
             feat
-            feature
             fix
             perf
             refactor
