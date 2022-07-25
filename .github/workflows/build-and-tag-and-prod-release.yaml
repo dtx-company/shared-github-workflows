@@ -36,10 +36,6 @@ on:
         required: true
       JFROG_FLOWCODE_FC_DOCKER_REPO:
         required: true
-      JFROG_FLOWCODE_FC_NPM_USERNAME:
-        required: true
-      JFROG_FLOWCODE_FC_NPM_PASSWORD_B64:
-        required: true
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
       JFROG_FLOWCODE_FC_PYPI_USERNAME:
@@ -55,13 +51,6 @@ jobs:
         # Checkout is required for publish_release step below to work.
         name: Checkout service repository
         uses: actions/checkout@v3
-      -
-        # Checkout is required to pull in the .npmrc
-        name: Checkout shared-github-workflows repository
-        uses: actions/checkout@v3
-        with:
-          repository: dtx-company/shared-github-workflows
-          path: shared
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
@@ -91,12 +80,9 @@ jobs:
         name: Create Github Release and Notes
         id: publish_release
         run: |
-          npm i @flowcode/semantic-release-fc-shared-config --userconfig=./shared/config/.npmrc
+          npm i @flowcode/semantic-release-fc-shared-config
           GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e @flowcode/semantic-release-fc-shared-config
           echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
-        env:
-          JFROG_FC_NPM_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_NPM_USERNAME }}
-          JFROG_FC_NPM_PASSWORD_B64: ${{ secrets.JFROG_FLOWCODE_FC_NPM_PASSWORD_B64 }}
       -
         # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
         name: Build and push
