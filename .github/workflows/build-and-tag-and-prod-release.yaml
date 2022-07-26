@@ -80,8 +80,8 @@ jobs:
         name: Create Github Release and Notes
         id: publish_release
         run: |
-          npm i @flowcode/semantic-release-fc-shared-config
-          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e @flowcode/semantic-release-fc-shared-config
+          npm i -g @flowcode/semantic-release-fc-shared-config
+          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
           echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
       -
         # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
