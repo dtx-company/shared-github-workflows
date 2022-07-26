@@ -48,15 +48,6 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       -
-        # Node is required -- is it already provided on our machines or is it necessary to set it up as a step?
-        name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-      -
-        name: Install global config
-        run: npm i @flowcode/semantic-release-fc-shared-config --no-save
-      -
         # Checkout is required for publish_release step below to work.
         name: Checkout service repository
         uses: actions/checkout@v3
@@ -78,12 +69,19 @@ jobs:
           username: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
           password: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
       -
+        # Node is required -- is it already provided on our machines or is it necessary to set it up as a step?
+        name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      -
         # This step does the github release and github tag.
         # It also outputs the tag so that subsequent steps can use it.
         name: Create Github Release and Notes
         id: publish_release
         run: |
-          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e @flowcode/semantic-release-fc-shared-config
+          npm i -g @flowcode/semantic-release-fc-shared-config
+          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
           echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
       -
         # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
