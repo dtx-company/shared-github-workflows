@@ -76,7 +76,7 @@ jobs:
           username: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
           password: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
       -
-        # Node.js install is required
+        # Node.js install is required -- is it already provided on our machines or is it necessary to set it up as a step?
         name: Setup Node.js
         uses: actions/setup-node@v3
         with:
