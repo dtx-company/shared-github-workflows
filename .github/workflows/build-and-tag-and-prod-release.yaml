@@ -3,6 +3,11 @@ name: build-and-tag-and-prod-release
 on:
   workflow_call:
     inputs:
+      release-ref:
+        required: false
+        type: string
+        default: ''
+        description: "The branch, tag or SHA to checkout"
       runner:
         required: false
         type: string
@@ -51,6 +56,8 @@ jobs:
         # Checkout is required for publish_release step below to work.
         name: Checkout service repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.release-ref}}
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
@@ -69,11 +76,11 @@ jobs:
           username: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
           password: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
       -
-        # Node is required -- is it already provided on our machines or is it necessary to set it up as a step?
+        # Node.js install is required
         name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*'
+          node-version: '16'
       -
         # This step does the github release and github tag.
         # It also outputs the tag so that subsequent steps can use it.
