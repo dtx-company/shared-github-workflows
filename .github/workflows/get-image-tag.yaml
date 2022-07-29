@@ -1,0 +1,65 @@
+#
+# Retrieves the image tag value from a specific application in a repo structured
+# like fc-infra-kubernetes
+#
+name: get-image-tag
+
+on:
+  workflow_call:
+    inputs:
+      account:
+        required: true
+        type: string
+        description: "The aws account name.  Ex: fc-services-prod"
+      region:
+        required: false
+        type: string
+        default: "use1"
+        description: "The short aws region name. Ex: use1"
+      service:
+        required: true
+        type: string
+        description: "The name of the service directory in the repo.  Ex: flow-app"
+      team:
+        required: true
+        type: string
+        description: "The team name in the repo. Matches argocd project name."
+      repository:
+        required: false
+        type: string
+        default: fc-infra-kubernetes
+        description: "The github repository to pull for the image setting."
+      runner:
+        required: false
+        type: string
+        default: "self-hosted"
+        description: "The github runner to run on"
+    secrets:
+      PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+        required: true
+
+jobs:
+  get-image-tag:
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      imageTag: ${{ steps.step2.outputs.imageTag }}
+    steps:
+      -
+        id: step1
+        uses: actions/checkout@v2
+        with:
+          repository: dtx-company/${{ inputs.repository }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+      -
+        id: step2
+        run: |
+          echo "Installing yq..."
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
+          echo;
+          echo "Getting image tag value..."
+          filename="cloud/aws/${{ inputs.account}}/${{ inputs.region}}/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+          imageTag=$(yq e '.fc-service.process.tag' ${filename})
+          echo imageTag value: $imageTag
+          echo "::set-output name=imageTag::${imageTag}"
