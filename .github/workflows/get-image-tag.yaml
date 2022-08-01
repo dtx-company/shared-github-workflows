@@ -6,6 +6,10 @@ name: get-image-tag
 
 on:
   workflow_call:
+    outputs:
+      imageTag:
+        description: "The image tag"
+        value: ${{ jobs.get-image-tag.outputs.imageTag }}
     inputs:
       account:
         required: true
@@ -34,10 +38,6 @@ on:
         type: string
         default: "self-hosted"
         description: "The github runner to run on"
-    outputs:
-      imageTag:
-        description: "The image tag"
-        value: ${{ steps.step2.outputs.imageTag }}
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
