@@ -20,7 +20,7 @@ on:
         required: true
         type: string
         description: "The name of the service directory in the repo.  Ex: flow-app"
-      team:
+      project:
         required: true
         type: string
         description: "The team name in the repo. Matches argocd project name."
