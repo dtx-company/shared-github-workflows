@@ -1,31 +1,26 @@
 name: release-notes
 
-on:
-  workflow_call:
-    outputs:
-      release_tag:
-        description: "The release tag from semantic-release"
-        value: ${{ jobs.release.outputs.release_tag}}
+outputs:
+  release-tag:
+    description: "The release tag from semantic-release"
+    value: ${{ steps.semantic-release.outputs.release-tag}}
 
-jobs:
-  release:
-    runs-on: self-hosted
-    outputs:
-      release_tag: ${{ steps.release-id.outputs.release_tag }}
-    steps:
-      -
-        # Checkout is required for publish_release step below to work.
-        name: Checkout service repository
-        uses: actions/checkout@v3
-      -
-        name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-      -
-        name: Create Github Release
-        id: release-id
-        run: |
-          npm i -g @flowcode/semantic-release-fc-shared-config
-          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
-          echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
+runs:
+  using: "composite"
+  steps:
+    -
+      # Checkout is required for publish_release step below to work.
+      name: Checkout service repository
+      uses: actions/checkout@v3
+    -
+      name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+    -
+      name: Create Github Release
+      id: semantic-release
+      run: |
+        npm i -g @flowcode/semantic-release-fc-shared-config
+        GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
+        echo ::set-output name=release-tag::$(git tag --sort committerdate | tail -1)
