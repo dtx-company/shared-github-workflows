@@ -119,7 +119,7 @@ jobs:
             echo "Updating ${filename} for deployments ${deployments[*]}..."
             for d in "${deployments[@]}"
             do
-              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ steps.semantic-release.outputs.release-tagrelease_tag }}"'  ${filename}
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ steps.semantic-release.outputs.release-tag }}"'  ${filename}
             done
             git add ${filename}
           done
@@ -128,7 +128,7 @@ jobs:
           echo "Pushing to git..."
           git diff HEAD
           if [[ $(git diff HEAD) ]]; then
-            git commit -m "cicd-auto: prod bump ${{ inputs.service }} to ${{ steps.semantic-release.outputs.release-tagrelease_tag }}" -m "triggered from https://github.com/${{ github.repository }}/releases/tag/${{ steps.semantic-release.outputs.release-tagrelease_tag }}"
+            git commit -m "cicd-auto: prod bump ${{ inputs.service }} to ${{ steps.semantic-release.outputs.release-tag }}" -m "triggered from https://github.com/${{ github.repository }}/releases/tag/${{ steps.semantic-release.outputs.release-tag }}"
             git push origin HEAD
           else
             echo "Nothing to push"
