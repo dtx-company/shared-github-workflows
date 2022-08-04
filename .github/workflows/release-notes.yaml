@@ -2,10 +2,16 @@ name: release-notes
 
 on:
   workflow_call:
+    outputs:
+      release_tag:
+        description: "The release tag from semantic-release"
+        value: ${{ jobs.release.outputs.release_tag}}
 
 jobs:
   release:
     runs-on: self-hosted
+    outputs:
+      release_tag: ${{ steps.release-id.outputs.release_tag }}
     steps:
       -
         # Checkout is required for publish_release step below to work.
@@ -18,6 +24,8 @@ jobs:
           node-version: 'lts/*'
       -
         name: Create Github Release
+        id: release-id
         run: |
           npm i -g @flowcode/semantic-release-fc-shared-config
           GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
+          echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
