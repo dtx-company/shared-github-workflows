@@ -1,0 +1,27 @@
+name: release-notes
+
+on:
+  workflow_call:
+
+jobs:
+  release:
+    runs-on: self-hosted
+    steps:
+      -
+        # Checkout is required for publish_release step below to work.
+        name: Checkout service repository
+        uses: actions/checkout@v3
+      -
+        # Node is required -- is it already provided on our machines or is it necessary to set it up as a step?
+        name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      -
+        # This step does the github release and github tag.
+        # It also outputs the tag so that subsequent steps can use it.
+        name: Create Github Release and Notes
+        run: |
+          npm i -g @flowcode/semantic-release-fc-shared-config
+          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
+      
