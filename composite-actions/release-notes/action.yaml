@@ -20,6 +20,7 @@ runs:
     -
       name: Create Github Release
       id: semantic-release
+      shell: bash
       run: |
         npm i -g @flowcode/semantic-release-fc-shared-config
         GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
