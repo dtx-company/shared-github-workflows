@@ -44,13 +44,13 @@ on:
         required: false
 
 jobs:
-  release-notes:
-    uses: dtx-company/shared-github-workflows/.github/workflows/release-notes.yaml@trunk
   build-and-push:
-    needs: release-notes
-    if: ${{ needs.release-notes.outputs.release_tag }} != ''
     runs-on: ${{ inputs.runner }}
     steps:
+      -
+        name: Create Release
+        id: semantic-release
+        uses: dtx-company/shared-github-workflows/.github/workflows/release-notes.yaml@trunk
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
@@ -80,7 +80,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ needs.release-notes.outputs.release_tag }}
+            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ steps.semantic-release.outputs.release-tag }}
           # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
           build-args: |
             GITHUB_USERNAME=fc-cicd-rw
@@ -119,7 +119,7 @@ jobs:
             echo "Updating ${filename} for deployments ${deployments[*]}..."
             for d in "${deployments[@]}"
             do
-              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ needs.release-notes.outputs.release_tag }}"'  ${filename}
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ steps.semantic-release.outputs.release-tagrelease_tag }}"'  ${filename}
             done
             git add ${filename}
           done
@@ -128,7 +128,7 @@ jobs:
           echo "Pushing to git..."
           git diff HEAD
           if [[ $(git diff HEAD) ]]; then
-            git commit -m "cicd-auto: prod bump ${{ inputs.service }} to ${{ needs.release-notes.outputs.release_tag }}" -m "triggered from https://github.com/${{ github.repository }}/releases/tag/${{ needs.release-notes.outputs.release_tag }}"
+            git commit -m "cicd-auto: prod bump ${{ inputs.service }} to ${{ steps.semantic-release.outputs.release-tagrelease_tag }}" -m "triggered from https://github.com/${{ github.repository }}/releases/tag/${{ steps.semantic-release.outputs.release-tagrelease_tag }}"
             git push origin HEAD
           else
             echo "Nothing to push"
