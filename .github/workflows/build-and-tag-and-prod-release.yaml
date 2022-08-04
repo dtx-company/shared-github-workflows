@@ -48,6 +48,9 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       -
+        name: Checkout service repository
+        uses: actions/checkout@v3
+      -
         name: Create Release
         id: semantic-release
         uses: ./.github/workflows/release-notes.yaml@trunk
