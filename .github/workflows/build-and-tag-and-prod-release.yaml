@@ -50,7 +50,7 @@ jobs:
       -
         name: Create Release
         id: semantic-release
-        uses: dtx-company/shared-github-workflows/.github/workflows/release-notes.yaml@trunk
+        uses: ./.github/workflows/release-notes.yaml@trunk
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
