@@ -45,7 +45,7 @@ on:
 
 jobs:
   release-notes:
-    uses: dtx-company/shared-github-workflows/.github/workflows/release-notes@trunk
+    uses: dtx-company/shared-github-workflows/.github/workflows/release-notes.yaml@trunk
   build-and-push:
     needs: release-notes
     if: ${{ needs.release-notes.outputs.release_tag }} != ''
