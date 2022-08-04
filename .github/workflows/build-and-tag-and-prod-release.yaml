@@ -48,14 +48,9 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       -
-        name: Checkout shared-github-workflows repo
-        uses: actions/checkout@v3
-        with:
-          repository: dtx-company/shared-github-workflows
-      -
         name: Create Release
         id: semantic-release
-        uses: ./.github/workflows/release-notes.yaml@trunk
+        uses: dtx-company/shared-github-composite-workflows/release-notes@trunk
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
