@@ -44,7 +44,7 @@ on:
         required: false
 
 jobs:
-  build-and-push:
+  release:
     runs-on: ${{ inputs.runner }}
     steps:
       -
