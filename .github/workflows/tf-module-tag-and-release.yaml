@@ -28,11 +28,11 @@ jobs:
         # It also outputs the tag so that subsequent steps can use it.
         #
         # We are not using the shared semantic-release config at this time as
-        # is it breaks BREAKING CHANGE: support.  When we address that we can
-        # cut over.
+        # is it breaks BREAKING CHANGE: support.  Once we address that, we can
+        # switch over.
         name: Create Github Release and Notes
         id: publish_release
         run: |
-          npm i -g @flowcode/semantic-release-fc-shared-config
+          npm i -g semantic-release conventional-changelog-conventionalcommits
           GITHUB_TOKEN=${{ github.token }} npx semantic-release@19
           echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
