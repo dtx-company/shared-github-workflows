@@ -7,7 +7,7 @@ on:
         required: false
         type: string
         default: "self-hosted"
-        description: "the github runner to run on, options are {ubuntu-latest, self-hosted, frontend}"
+        description: "the github runner to run on, options are {ubuntu-latest, self-hosted}"
 
 jobs:
   release:
@@ -26,9 +26,13 @@ jobs:
       -
         # This step does the github release and github tag.
         # It also outputs the tag so that subsequent steps can use it.
+        #
+        # We are not using the shared semantic-release config at this time as
+        # is it breaks BREAKING CHANGE: support.  When we address that we can
+        # cut over.
         name: Create Github Release and Notes
         id: publish_release
         run: |
           npm i -g @flowcode/semantic-release-fc-shared-config
-          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
+          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19
           echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
