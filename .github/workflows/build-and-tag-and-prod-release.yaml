@@ -48,9 +48,9 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       -
-        # Checkout is required for publish_release step below to work.
-        name: Checkout service repository
-        uses: actions/checkout@v3
+        name: Create Release
+        id: semantic-release
+        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@trunk
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
@@ -69,21 +69,6 @@ jobs:
           username: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
           password: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
       -
-        # Node is required -- is it already provided on our machines or is it necessary to set it up as a step?
-        name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-      -
-        # This step does the github release and github tag.
-        # It also outputs the tag so that subsequent steps can use it.
-        name: Create Github Release and Notes
-        id: publish_release
-        run: |
-          npm i -g @flowcode/semantic-release-fc-shared-config
-          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
-          echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
-      -
         # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
         name: Build and push
         id: docker_build
@@ -95,7 +80,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ steps.publish_release.outputs.release_tag }}
+            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ steps.semantic-release.outputs.release-tag }}
           # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
           build-args: |
             GITHUB_USERNAME=fc-cicd-rw
@@ -134,7 +119,7 @@ jobs:
             echo "Updating ${filename} for deployments ${deployments[*]}..."
             for d in "${deployments[@]}"
             do
-              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ steps.publish_release.outputs.release_tag }}"'  ${filename}
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ steps.semantic-release.outputs.release-tag }}"'  ${filename}
             done
             git add ${filename}
           done
@@ -143,7 +128,7 @@ jobs:
           echo "Pushing to git..."
           git diff HEAD
           if [[ $(git diff HEAD) ]]; then
-            git commit -m "cicd-auto: prod bump ${{ inputs.service }} to ${{ steps.publish_release.outputs.release_tag }}" -m "triggered from https://github.com/${{ github.repository }}/releases/tag/${{ steps.publish_release.outputs.release_tag }}"
+            git commit -m "cicd-auto: prod bump ${{ inputs.service }} to ${{ steps.semantic-release.outputs.release-tag }}" -m "triggered from https://github.com/${{ github.repository }}/releases/tag/${{ steps.semantic-release.outputs.release-tag }}"
             git push origin HEAD
           else
             echo "Nothing to push"
