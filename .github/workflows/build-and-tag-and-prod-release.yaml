@@ -54,7 +54,10 @@ on:
         required: false
       JFROG_FLOWCODE_FC_PYPI_PASSWORD:
         required: false
-
+      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
+        required: false
+      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
+        required: false
 jobs:
   release:
     runs-on: ${{ inputs.runner }}
