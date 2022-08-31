@@ -22,6 +22,10 @@ on:
         required: false
         type: string
         default: "./Dockerfile" # Dockerfile in the root of the repo
+      docker-build-args:
+        required: false
+        type: string
+        description: "newline separated list of non-secret arguments to pass to the docker build, e.g. 'APP_ENV=stg\nFOO=foo'"
       awsenvs:
         required: false
         description: "comma separate list of envs to release to, defaults to 'fc-services-prod/use1'"
@@ -86,6 +90,7 @@ jobs:
             GITHUB_USERNAME=fc-cicd-rw
             JFROG_FLOWCODE_FC_PYPI_USERNAME=${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
             JFROG_FLOWCODE_FC_PYPI_PASSWORD=${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
+            ${{ inputs.docker-build-args }}
           secrets: |
             GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
       -
