@@ -2,7 +2,8 @@ name: build-and-tag-and-prod-release
 
 on:
   workflow_call:
-    runner:
+    inputs:
+      runner:
         required: false
         type: string
         default: "self-hosted"
