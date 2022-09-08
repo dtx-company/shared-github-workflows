@@ -101,6 +101,8 @@ jobs:
             GITHUB_USERNAME=fc-cicd-rw
             JFROG_FLOWCODE_FC_PYPI_USERNAME=${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
             JFROG_FLOWCODE_FC_PYPI_PASSWORD=${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
+            BUILD_ID=${{ inputs.service }}-${{ env.IMAGE_TAG }}
+            VERSION=${{ env.IMAGE_TAG }}
             ${{ inputs.docker-build-args }}
           secrets: |
             GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
