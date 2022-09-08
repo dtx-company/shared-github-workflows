@@ -1,0 +1,177 @@
+name: docker-build-and-push
+
+inputs:
+  runner:
+    required: false
+    type: string
+    default: "self-hosted"
+    description: "the github runner to run on, options are {ubuntu-latest, self-hosted, frontend}"
+  service:
+    required: true
+    type: string
+  project:
+    required: true
+    type: string
+  release-tag:
+    required: true
+    type: string
+  extra-deployments:
+    required: false
+    description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
+    type: string
+  dockerfilepath:
+    required: false
+    type: string
+    default: "./Dockerfile" # Dockerfile in the root of the repo
+  docker-build-args:
+    required: false
+    type: string
+    description: "newline separated list of non-secret arguments to pass to the docker build, e.g. 'APP_ENV=stg\nFOO=foo'"
+  awsenvs:
+    required: false
+    description: "comma separate list of envs to release to, defaults to 'fc-services-prod/use1'"
+    type: string
+    default: "fc-services-prod/use1"
+  post-build-script:
+    required: false
+    description: "file path of a shell script to run between the build step and the release step, e.g. 'scripts/myscript.sh'"
+    type: string
+  post-build-script-inputs:
+    required: false
+    description: "json string to pass to the post-build-script"
+    type: string
+  JFROG_FLOWCODE_SERVER_NAME:
+    required: true
+    type: string
+  JFROG_FLOWCODE_FC_DOCKER_USERNAME:
+    required: true
+    type: string
+  JFROG_FLOWCODE_FC_DOCKER_PASSWORD:
+    required: true
+    type: string
+  JFROG_FLOWCODE_FC_DOCKER_REPO:
+    required: true
+    type: string
+  PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+    required: true
+    type: string
+  JFROG_FLOWCODE_FC_PYPI_USERNAME:
+    required: false
+    type: string
+  JFROG_FLOWCODE_FC_PYPI_PASSWORD:
+    required: false
+    type: string
+  STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
+    required: false
+    type: string
+  STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
+    required: false
+    type: string
+
+
+runs:
+  using: "composite"
+  steps:
+    -
+      name: Set up Docker Context for Buildx
+      id: buildx-context
+      run: |
+        docker context create builders
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        endpoint: builders
+    -
+      name: Login to Artifactory
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
+        username: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
+        password: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
+    -
+      # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
+      name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        file: ${{ inputs.dockerfilepath }}
+        github-token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: |
+          ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ inputs.release-tag }}
+        # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
+        build-args: |
+          GITHUB_USERNAME=fc-cicd-rw
+          JFROG_FLOWCODE_FC_PYPI_USERNAME=${{ inputs.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
+          JFROG_FLOWCODE_FC_PYPI_PASSWORD=${{ inputs.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
+          ${{ inputs.docker-build-args }}
+        secrets: |
+          GITHUB_TOKEN=${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+    -
+      name: Checkout repo to run post-build script
+      if: inputs.post-build-script != ''
+      uses: actions/checkout@v2
+      with:
+        token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+    -
+      name: Run post-build script
+      if: inputs.post-build-script != ''
+      env:
+        # Don't edit or delete these without confirming it won't break the scripts that use them.
+        JFROG_FLOWCODE_SERVER_NAME: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
+        JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}
+        SERVICE_NAME: ${{ inputs.service }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+      run: |
+        ./${{ inputs.post-build-script }}
+    -
+      name: Checkout kubernetes infra repo
+      uses: actions/checkout@v2
+      with:
+        repository: dtx-company/fc-infra-kubernetes
+        token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+    -
+      # This is heavily duplicated with the nonprod workflow but it cannot be factored out
+      # and reused because a reusable workflow cannot call another reusable workflow according to the docs:
+      # https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/reusing-workflows#limitations
+      name: Update the image tags in values.yaml and push commit
+      run: |
+        echo "Installing yq..."
+        sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        sudo chmod a+x /usr/local/bin/yq
+
+        echo;
+        echo "Setting git config..."
+        git config --local user.name "${{ github.event.sender.login }}"
+        git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
+
+        echo;
+        IFS=, read -ra awsenvs <<< "${{ inputs.awsenvs }}" # get list of envs to release to
+        for awsenv in "${awsenvs[@]}"
+        do
+          filename="cloud/aws/${awsenv}/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+          IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
+          deployments+=("fc-service")                                       # fc-service is always included
+          echo "Updating ${filename} for deployments ${deployments[*]}..."
+          for d in "${deployments[@]}"
+          do
+            path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.release-tag }}"'  ${filename}
+          done
+          git add ${filename}
+        done
+
+        echo; echo;
+        echo "Pushing to git..."
+        git diff HEAD
+        if [[ $(git diff HEAD) ]]; then
+          git commit -m "cicd-auto: prod bump ${{ inputs.service }} to ${{ inputs.release-tag }}" -m "triggered from https://github.com/${{ github.repository }}/releases/tag/${{ inputs.release-tag }}"
+          git push origin HEAD
+        else
+          echo "Nothing to push"
+        fi
