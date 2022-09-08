@@ -41,7 +41,7 @@ on:
         type: string
       create-release:
         required: false
-        description: "Should the workflow create a release",
+        description: "Should the workflow create a release"
         type: boolean
         default: true
     secrets:
