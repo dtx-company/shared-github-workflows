@@ -74,6 +74,7 @@ runs:
     -
       name: Set up Docker Context for Buildx
       id: buildx-context
+      shell: bash
       run: |
         docker context create builders
     -
@@ -117,6 +118,7 @@ runs:
         token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
     -
       name: Run post-build script
+      shell: bash
       if: inputs.post-build-script != ''
       env:
         # Don't edit or delete these without confirming it won't break the scripts that use them.
@@ -140,6 +142,7 @@ runs:
       # and reused because a reusable workflow cannot call another reusable workflow according to the docs:
       # https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/reusing-workflows#limitations
       name: Update the image tags in values.yaml and push commit
+      shell: bash
       run: |
         echo "Installing yq..."
         sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
