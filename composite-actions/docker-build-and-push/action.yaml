@@ -107,7 +107,7 @@ runs:
           GITHUB_USERNAME=fc-cicd-rw
           JFROG_FLOWCODE_FC_PYPI_USERNAME=${{ inputs.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD=${{ inputs.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
-          BUILD_ID=${{ inputs.service }}-${{ github.sha }}
+          BUILD_ID=${{ github.sha }}
           VERSION=${{ github.sha }}
           ${{ inputs.docker-build-args }}
         secrets: |
