@@ -127,7 +127,7 @@ runs:
         JFROG_FLOWCODE_SERVER_NAME: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
         JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}
         SERVICE_NAME: ${{ inputs.service }}
-        IMAGE_TAG: ${{ github.sha }}
+        RELEASE_TAG: ${{ inputs.release-tag }}
         POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
         AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
