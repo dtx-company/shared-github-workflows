@@ -101,7 +101,7 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
-          ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ inputs.release-tag }}
+          ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ github.sha }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
           GITHUB_USERNAME=fc-cicd-rw
@@ -128,6 +128,7 @@ runs:
         JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}
         SERVICE_NAME: ${{ inputs.service }}
         RELEASE_TAG: ${{ inputs.release-tag }}
+        IMAGE_TAG: ${{ github.sha }}
         POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
         AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
@@ -165,7 +166,7 @@ runs:
           echo "Updating ${filename} for deployments ${deployments[*]}..."
           for d in "${deployments[@]}"
           do
-            path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.release-tag }}"'  ${filename}
+            path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ github.sha }}"'  ${filename}
           done
           git add ${filename}
         done
