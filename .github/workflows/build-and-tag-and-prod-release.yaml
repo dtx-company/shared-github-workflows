@@ -72,7 +72,7 @@ jobs:
         id: semantic-release
         uses: dtx-company/shared-github-workflows/composite-actions/release-notes@trunk
       - name: build and push docker
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@trunk
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-prod@trunk
         with:
           runner: ${{ inputs.runner }}
           service: ${{ inputs.service }}
