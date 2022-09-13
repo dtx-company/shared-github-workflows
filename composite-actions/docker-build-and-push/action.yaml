@@ -1,4 +1,4 @@
-name: docker-build-and-push-prod
+name: docker-build-and-push
 
 inputs:
   runner:
