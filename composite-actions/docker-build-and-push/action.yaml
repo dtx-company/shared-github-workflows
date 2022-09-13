@@ -40,6 +40,10 @@ inputs:
     required: false
     description: "json string to pass to the post-build-script"
     type: string
+  docker-image-path:
+    required: false
+    description: "custom path to access the docker image"
+    type: string
   JFROG_FLOWCODE_SERVER_NAME:
     required: true
     type: string
@@ -101,7 +105,7 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
-          ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}:${{ github.sha }}
+          ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ github.sha }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
           GITHUB_USERNAME=fc-cicd-rw
@@ -128,6 +132,7 @@ runs:
         JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}
         SERVICE_NAME: ${{ inputs.service }}
         RELEASE_TAG: ${{ inputs.release-tag }}
+        DOCKER_IMAGE_PATH: ${{ inputs.docker-image-path }}
         IMAGE_TAG: ${{ github.sha }}
         POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
         AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
@@ -166,7 +171,7 @@ runs:
           echo "Updating ${filename} for deployments ${deployments[*]}..."
           for d in "${deployments[@]}"
           do
-            path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ github.sha }}"'  ${filename}
+            path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.release-tag }}"'  ${filename}
           done
           git add ${filename}
         done

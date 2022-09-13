@@ -39,6 +39,10 @@ on:
         required: false
         description: "json string to pass to the post-build-script"
         type: string
+      docker-image-path:
+        required: false
+        description: "custom path to access the docker image"
+        type: string
     secrets:
       JFROG_FLOWCODE_SERVER_NAME:
         required: true
@@ -80,6 +84,7 @@ jobs:
           post-build-script: ${{ inputs.post-build-script }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
           release-tag: ${{ steps.semantic-release.outputs.release-tag }}
+          docker-image-path: ${{ inputs.docker-image-path }}
 
           # secrets needs to be passed in as inputs to composite actions
           JFROG_FLOWCODE_SERVER_NAME: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
