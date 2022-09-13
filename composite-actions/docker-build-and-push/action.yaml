@@ -133,7 +133,7 @@ runs:
         SERVICE_NAME: ${{ inputs.service }}
         RELEASE_TAG: ${{ inputs.release-tag }}
         DOCKER_IMAGE_PATH: ${{ inputs.docker-image-path }}
-        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_TAG: ${{ inputs.release-tag }}
         POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
         AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
