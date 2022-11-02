@@ -38,6 +38,7 @@ inputs:
     type: string
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
     required: true
+    type: string
   ECR_FLOWCODE_FC_DOCKER_REPO:
     required: true
     type: string
@@ -49,7 +50,7 @@ inputs:
     type: string
   ECR_FLOWCODE_FC_DOCKER_SECRET:
     required: true
-    type: string   type: string
+    type: string
 
 runs:
   using: "composite"
