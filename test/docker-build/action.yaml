@@ -93,7 +93,6 @@ runs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ inputs.release-tag }}
-          #${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.ECR_FLOWCODE_FC_DOCKER_REPO }}:${{ inputs.service }}${{ inputs.docker-image-path }}_${{ inputs.release-tag }}
           ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.ECR_FLOWCODE_FC_DOCKER_REPO }}:${{ inputs.service }}${{ inputs.release-tag }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
