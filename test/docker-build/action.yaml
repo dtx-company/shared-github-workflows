@@ -56,7 +56,7 @@ runs:
         endpoint: builders
     -
       name: Login to Artifactory
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
         username: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
