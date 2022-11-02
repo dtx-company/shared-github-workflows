@@ -38,7 +38,18 @@ inputs:
     type: string
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
     required: true
+  ECR_FLOWCODE_FC_DOCKER_REPO:
+    required: true
     type: string
+  ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER:
+    required: true
+    type: string
+  ECR_FLOWCODE_FC_DOCKER_KEY:
+    required: true
+    type: string
+  ECR_FLOWCODE_FC_DOCKER_SECRET:
+    required: true
+    type: string   type: string
 
 runs:
   using: "composite"
@@ -61,6 +72,13 @@ runs:
         registry: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
         username: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
         password: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
+    -
+      name: Login to ECR
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+        username: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_KEY }}
+        password: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SECRET }}
     -
       # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
       name: Build and push
