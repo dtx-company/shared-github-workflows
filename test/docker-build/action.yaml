@@ -42,7 +42,7 @@ inputs:
   ECR_FLOWCODE_FC_DOCKER_REPO:
     required: true
     type: string
-  ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER:
+  ECR_FLOWCODE_FC_DOCKER_SERVER:
     required: true
     type: string
   ECR_FLOWCODE_FC_DOCKER_KEY:
