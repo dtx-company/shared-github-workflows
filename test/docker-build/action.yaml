@@ -84,6 +84,7 @@ runs:
       name: Set up ECR repo if doesn't exist
       uses: int128/create-ecr-repository-action@v1
       with:
+        region: us-east-1
         repository: hello-world
     -
       # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
