@@ -81,6 +81,11 @@ runs:
         username: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_KEY }}
         password: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SECRET }}
     -
+      name: Set up ECR repo if doesn't exist
+      uses: int128/create-ecr-repository-action@v1
+      with:
+        repository: hello-world
+    -
       # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
       name: Build and push
       id: docker_build
