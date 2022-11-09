@@ -126,7 +126,7 @@ jobs:
           cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ env.IMAGE_TAG }}
-            ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ env.IMAGE_TAG }}
+            ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ env.IMAGE_TAG }}
           # GITHUB_USERNAME and GITHUB_TOKEN are needed to pull private repos in the build process.
           # JFROG_FLOWCODE_FC_PYPI_USERNAME and JFROG_FLOWCODE_FC_PYPI_PASSWORD are needed to pull from private pypi repos.
           # VERSION and BUILD_ID are used by the flow frontend build process.
