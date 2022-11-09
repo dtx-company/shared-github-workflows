@@ -55,17 +55,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{secrets.ECR_FLOWCODE_FC_DOCKER_KEY}}
-          aws-secret-access-key: ${{secrets.ECR_FLOWCODE_FC_DOCKER_SECRET}}
-          aws-region: us-east-1
-    - name: Create ECR repo if necessary
-        id: ecr-repo
-        uses: @2iq/aws-ecr-create-repository@v1
-        with:
-          ecr-name: my-custom-ecr-repo-name
+    -
+      name: Set AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{secrets.ECR_FLOWCODE_FC_DOCKER_KEY}}
+        aws-secret-access-key: ${{secrets.ECR_FLOWCODE_FC_DOCKER_SECRET}}
+        aws-region: us-east-1
+    -
+      name: Create ECR repo if necessary
+      id: ecr-repo
+      uses: @2iq/aws-ecr-create-repository@v1
+      with:
+        ecr-name: my-custom-ecr-repo-name
     -
       name: Set up Docker Context for Buildx
       id: buildx-context
