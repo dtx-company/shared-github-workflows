@@ -63,11 +63,11 @@ runs:
         aws-secret-access-key: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SECRET }}
         aws-region: us-east-1
     -
-      name: Create ECR repo if necessary
+      name: Set up ECR repo if doesn't exist
       id: ecr-repo
-      uses: 2iq/aws-ecr-create-repository@v1
+      uses: int128/create-ecr-repository-action@v1
       with:
-        ecr-name: my-custom-ecr-repo-name
+        repository: hello-world
     -
       name: Set up Docker Context for Buildx
       id: buildx-context
