@@ -67,7 +67,7 @@ runs:
       id: ecr-repo
       uses: int128/create-ecr-repository-action@v1
       with:
-        repository: hello-world
+        repository: ${{ inputs.service }}
     -
       name: Set up Docker Context for Buildx
       id: buildx-context
@@ -106,7 +106,7 @@ runs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ inputs.release-tag }}
-          ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.ECR_FLOWCODE_FC_DOCKER_REPO }}:${{ inputs.service }}${{ inputs.docker-image-path }}${{ inputs.release-tag }}
+          ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.release-tag }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
           GITHUB_USERNAME=fc-cicd-rw
