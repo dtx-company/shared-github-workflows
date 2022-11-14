@@ -49,13 +49,13 @@ on:
         type: string
     secrets:
       JFROG_FLOWCODE_SERVER_NAME:
-        required: true
+        required: false
       JFROG_FLOWCODE_FC_DOCKER_USERNAME:
-        required: true
+        required: false
       JFROG_FLOWCODE_FC_DOCKER_PASSWORD:
-        required: true
+        required: false
       JFROG_FLOWCODE_FC_DOCKER_REPO:
-        required: true
+        required: false
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
       JFROG_FLOWCODE_FC_PYPI_USERNAME:
@@ -105,13 +105,6 @@ jobs:
         with:
           endpoint: builders
       -
-        name: Login to Artifactory
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
-          username: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
-          password: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
-      -
         name: Login to ECR
         uses: docker/login-action@v2
         with:
@@ -129,7 +122,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ env.IMAGE_TAG }}
             ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ env.IMAGE_TAG }}
           # GITHUB_USERNAME and GITHUB_TOKEN are needed to pull private repos in the build process.
           # JFROG_FLOWCODE_FC_PYPI_USERNAME and JFROG_FLOWCODE_FC_PYPI_PASSWORD are needed to pull from private pypi repos.
