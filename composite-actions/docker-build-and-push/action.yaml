@@ -71,6 +71,12 @@ inputs:
   STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
     required: false
     type: string
+  SENTRY_RELEASE:
+    required: false
+    type: string
+  SENTRY_AUTH_TOKEN:
+    required: false
+    type: string
 
 runs:
   using: "composite"
