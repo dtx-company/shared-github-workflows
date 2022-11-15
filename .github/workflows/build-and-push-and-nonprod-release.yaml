@@ -157,7 +157,7 @@ jobs:
           # Don't edit or delete these without confirming it won't break the scripts that use them.
           JFROG_FLOWCODE_SERVER_NAME: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
           JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           SERVICE_NAME: ${{ inputs.service }}
           ECR_IMAGE_PATH: ${{ inputs.ecr-image-path }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
