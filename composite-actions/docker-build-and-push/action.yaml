@@ -92,8 +92,8 @@ runs:
       name: Set AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
-        aws-secret-access-key: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+        aws-access-key-id: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_KEY }}
+        aws-secret-access-key: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SECRET }}
         aws-region: us-east-1
     -
       name: Set up ECR repo if doesn't exist
@@ -123,9 +123,9 @@ runs:
       name: Login to ECR
       uses: docker/login-action@v2
       with:
-        registry: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-        username: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
-        password: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+        registry: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+        username: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_KEY }}
+        password: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SECRET }}
     -
       # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
       name: Build and push
@@ -139,7 +139,7 @@ runs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ inputs.release-tag }}
-          ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ inputs.release-tag }}
+          ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ inputs.release-tag }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
           GITHUB_USERNAME=fc-cicd-rw
@@ -164,7 +164,7 @@ runs:
         # Don't edit or delete these without confirming it won't break the scripts that use them.
         JFROG_FLOWCODE_SERVER_NAME: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
         JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}
-        ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+        ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
         SERVICE_NAME: ${{ inputs.service }}
         RELEASE_TAG: ${{ inputs.release-tag }}
         DOCKER_IMAGE_PATH: ${{ inputs.docker-image-path }}
