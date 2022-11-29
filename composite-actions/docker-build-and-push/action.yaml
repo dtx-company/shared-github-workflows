@@ -44,6 +44,10 @@ inputs:
     required: false
     description: "custom path to access the docker image"
     type: string
+  ecr-image-path:
+    required: false
+    description: "custom path to access the ECR docker image"
+    type: string
   JFROG_FLOWCODE_SERVER_NAME:
     required: true
     type: string
@@ -71,10 +75,32 @@ inputs:
   STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
     required: false
     type: string
+  ECR_FLOWCODE_FC_DOCKER_SERVER:
+    required: true
+    type: string
+  ECR_FLOWCODE_FC_DOCKER_KEY:
+    required: true
+    type: string
+  ECR_FLOWCODE_FC_DOCKER_SECRET:
+    required: true
+    type: string
 
 runs:
   using: "composite"
   steps:
+    -
+      name: Set AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_KEY }}
+        aws-secret-access-key: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+        aws-region: us-east-1
+    -
+      name: Set up ECR repo if doesn't exist
+      id: ecr-repo
+      uses: int128/create-ecr-repository-action@v1
+      with:
+        repository: ${{ inputs.service }}
     -
       name: Set up Docker Context for Buildx
       id: buildx-context
@@ -88,11 +114,18 @@ runs:
         endpoint: builders
     -
       name: Login to Artifactory
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
         username: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
         password: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
+    -
+      name: Login to ECR
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+        username: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_KEY }}
+        password: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SECRET }}
     -
       # Same as the nonprod workflow, except the image tag is the github release tag not the SHA.
       name: Build and push
@@ -106,6 +139,7 @@ runs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ inputs.release-tag }}
+          ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ inputs.release-tag }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
           GITHUB_USERNAME=fc-cicd-rw
@@ -130,9 +164,11 @@ runs:
         # Don't edit or delete these without confirming it won't break the scripts that use them.
         JFROG_FLOWCODE_SERVER_NAME: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
         JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}
+        ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
         SERVICE_NAME: ${{ inputs.service }}
         RELEASE_TAG: ${{ inputs.release-tag }}
         DOCKER_IMAGE_PATH: ${{ inputs.docker-image-path }}
+        ECR_IMAGE_PATH: ${{ inputs.ecr-image-path }}
         IMAGE_TAG: ${{ inputs.release-tag }}
         POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
         AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
