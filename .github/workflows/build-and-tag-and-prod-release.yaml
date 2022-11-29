@@ -43,10 +43,6 @@ on:
         required: false
         description: "custom path to access the docker image"
         type: string
-      ecr-image-path:
-        required: false
-        description: "custom path to access the ECR docker image"
-        type: string
     secrets:
       JFROG_FLOWCODE_SERVER_NAME:
         required: true
@@ -66,12 +62,6 @@ on:
         required: false
       STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
         required: false
-      ECR_FLOWCODE_FC_DOCKER_SERVER:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_KEY:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_SECRET:
-        required: true
 
 jobs:
   release:
@@ -80,9 +70,9 @@ jobs:
       -
         name: Create Release
         id: semantic-release
-        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@0.1.0
+        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@trunk
       - name: build and push docker
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@0.1.0
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@trunk
         with:
           runner: ${{ inputs.runner }}
           service: ${{ inputs.service }}
@@ -95,7 +85,6 @@ jobs:
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
           release-tag: ${{ steps.semantic-release.outputs.release-tag }}
           docker-image-path: ${{ inputs.docker-image-path }}
-          ecr-image-path: ${{ inputs.ecr-image-path }}
 
           # secrets needs to be passed in as inputs to composite actions
           JFROG_FLOWCODE_SERVER_NAME: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
@@ -107,6 +96,3 @@ jobs:
           JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
