@@ -43,10 +43,6 @@ on:
         required: false
         description: "custom path to access the docker image"
         type: string
-      ecr-image-path:
-        required: false
-        description: "custom path to access the ECR docker image"
-        type: string
     secrets:
       JFROG_FLOWCODE_SERVER_NAME:
         required: true
@@ -66,12 +62,6 @@ on:
         required: false
       STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
         required: false
-      ECR_FLOWCODE_FC_DOCKER_SERVER:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_KEY:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_SECRET:
-        required: true
 
 permissions:
   id-token: write    # Required for aws role assumption
@@ -82,19 +72,6 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
     steps:
-      -
-        name: Set AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
-          aws-secret-access-key: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
-          aws-region: us-east-1
-      -
-        name: Set up ECR repo if doesn't exist
-        id: ecr-repo
-        uses: int128/create-ecr-repository-action@v1
-        with:
-          repository: ${{ inputs.service }}
       -
         name: Set up Docker Context for Buildx
         id: buildx-context
@@ -107,18 +84,11 @@ jobs:
           endpoint: builders
       -
         name: Login to Artifactory
-        uses: docker/login-action@v2
+        uses: docker/login-action@v1
         with:
           registry: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
           username: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
           password: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
-      -
-        name: Login to ECR
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          username: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
-          password: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
       -
         name: Build and push
         id: docker_build
@@ -131,7 +101,6 @@ jobs:
           cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}/${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ env.IMAGE_TAG }}
-            ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ env.IMAGE_TAG }}
           # GITHUB_USERNAME and GITHUB_TOKEN are needed to pull private repos in the build process.
           # JFROG_FLOWCODE_FC_PYPI_USERNAME and JFROG_FLOWCODE_FC_PYPI_PASSWORD are needed to pull from private pypi repos.
           # VERSION and BUILD_ID are used by the flow frontend build process.
@@ -158,11 +127,9 @@ jobs:
           # Don't edit or delete these without confirming it won't break the scripts that use them.
           JFROG_FLOWCODE_SERVER_NAME: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
           JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           SERVICE_NAME: ${{ inputs.service }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           DOCKER_IMAGE_PATH: ${{ inputs.docker-image-path }}
-          ECR_IMAGE_PATH: ${{ inputs.ecr-image-path }}
           POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
