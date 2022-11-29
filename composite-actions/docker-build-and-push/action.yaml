@@ -196,7 +196,7 @@ runs:
           echo "Updating ${filename} for deployments ${deployments[*]}..."
           for d in "${deployments[@]}"
           do
-            path=".${d}.process.image" yq -i eval 'eval(strenv(path)) = "${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}"'  ${filename}
+            path=".${d}.process.image" yq -i eval 'eval(strenv(path)) = "${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}"'  ${filename}
             path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.ecr-image-path }}${{ inputs.release-tag }}"'  ${filename}
           done
           git add ${filename}
