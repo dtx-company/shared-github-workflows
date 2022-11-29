@@ -80,9 +80,9 @@ jobs:
       -
         name: Create Release
         id: semantic-release
-        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@0.0.1
+        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@0.1.0
       - name: build and push docker
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@0.0.1
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@0.1.0
         with:
           runner: ${{ inputs.runner }}
           service: ${{ inputs.service }}
