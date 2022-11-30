@@ -24,7 +24,7 @@ on:
 jobs:
   validate:
     name: validate-pr-title
-    uses: dtx-company/shared-github-workflows/.github/workflows/conventional-pr-title.yaml@v0.2.0
+    uses: dtx-company/shared-github-workflows/.github/workflows/conventional-pr-title.yaml@v1.0.0
 ```
 
 ## build-and-push-and-nonprod-release.yaml
@@ -50,7 +50,7 @@ on:
 jobs:
   cd:
     name: shared-nonprod-cd-workflow
-    uses: dtx-company/shared-github-workflows/.github/workflows/build-and-push-and-nonprod-release.yaml@v0.2.0
+    uses: dtx-company/shared-github-workflows/.github/workflows/build-and-push-and-nonprod-release.yaml@v1.0.0
     with:
       service: <service-name>
       project: <project-name>

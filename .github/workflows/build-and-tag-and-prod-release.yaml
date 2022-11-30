@@ -39,23 +39,11 @@ on:
         required: false
         description: "json string to pass to the post-build-script"
         type: string
-      docker-image-path:
-        required: false
-        description: "custom path to access the docker image"
-        type: string
       ecr-image-path:
         required: false
         description: "custom path to access the ECR docker image"
         type: string
     secrets:
-      JFROG_FLOWCODE_SERVER_NAME:
-        required: true
-      JFROG_FLOWCODE_FC_DOCKER_USERNAME:
-        required: true
-      JFROG_FLOWCODE_FC_DOCKER_PASSWORD:
-        required: true
-      JFROG_FLOWCODE_FC_DOCKER_REPO:
-        required: true
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
       JFROG_FLOWCODE_FC_PYPI_USERNAME:
@@ -80,9 +68,9 @@ jobs:
       -
         name: Create Release
         id: semantic-release
-        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@v0.2.0
+        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@v1.0.0
       - name: build and push docker
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v0.2.0
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v1.0.0
         with:
           runner: ${{ inputs.runner }}
           service: ${{ inputs.service }}
@@ -94,14 +82,9 @@ jobs:
           post-build-script: ${{ inputs.post-build-script }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
           release-tag: ${{ steps.semantic-release.outputs.release-tag }}
-          docker-image-path: ${{ inputs.docker-image-path }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
 
           # secrets needs to be passed in as inputs to composite actions
-          JFROG_FLOWCODE_SERVER_NAME: ${{ secrets.JFROG_FLOWCODE_SERVER_NAME }}
-          JFROG_FLOWCODE_FC_DOCKER_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
-          JFROG_FLOWCODE_FC_DOCKER_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
-          JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ secrets.JFROG_FLOWCODE_FC_DOCKER_REPO }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
