@@ -196,7 +196,8 @@ jobs:
             echo "Updating ${filename} for deployments ${deployments[*]}..."
             for d in "${deployments[@]}"
             do
-              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ env.IMAGE_TAG }}"'  ${filename}
+              path=".${d}.process.image" yq -i eval 'eval(strenv(path)) = "${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}"'  ${filename}
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.ecr-image-path }}${{ env.IMAGE_TAG }}"'  ${filename}
             done
             git add ${filename}
           done
