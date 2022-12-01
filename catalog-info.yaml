@@ -1,0 +1,15 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: shared-github-workflows
+  description: Github actions used by flowcode to build and deploy services
+  annotations:
+    github.com/project-slug: dtx-company/shared-github-workflows
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  lifecycle: experimental
+  owner: sre
+  system: 
+

@@ -1,0 +1,7 @@
+site_name: "shared-github-workflows"
+site_description: "Github actions used by flowcode to build and deploy services"
+repo_url: https://github.com/dtx-company/shared-github-workflows
+edit_uri: edit/trunk/docs
+
+plugins:
+  - techdocs-core
