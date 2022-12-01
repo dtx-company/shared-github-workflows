@@ -19,7 +19,7 @@ In your repo in the `.github/workflows` directory, look for the yaml files conta
 uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v0.0.1
 ```
 
-You will want to update the tag to `v0.1.0, and add the below variables (selecting PROD or SDLC based on environment) :
+You will want to update the tag to `v0.1.0`, and add the below variables (selecting PROD or SDLC based on environment) :
 
 ```
 ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_[PROD|SDLC]_FC_DOCKER_SERVER }}
@@ -43,7 +43,7 @@ In your repo in the `.github/workflows` directory, look for the yaml files conta
 uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v0.1.0
 ```
 
-You will want to update the tag to `v0.2.0, and if you have skipped to here, make sure you've added the variables from the previous step.
+You will want to update the tag to `v0.2.0`, and if you have skipped to here, make sure you've added the variables from the previous step.
 
 One this has run, you can verify it worked by looking at the image being used in ArgoCD, it should have an AWS path now instead of JFrog.
 
