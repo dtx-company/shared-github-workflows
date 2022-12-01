@@ -37,13 +37,17 @@ Once this is run, you can verify it worked by looking for your image in `fc-comm
 
 ## v0.2.0
 
-In your workflow file you will want to update the tag to `v0.2.0`, and if you have skipped to here, make sure you've added the variables from the previous step.
+In your workflow file you will want to update the tag to `v0.2.0`.
+
+If you have skipped to here, make sure you've added the variables from the previous step.
 
 One this has run, you can verify it worked by looking at the image being used in ArgoCD, it should have an AWS path now instead of JFrog.
 
 ## v1
 
-In your workflow file you will want to update the tag to `v1`, if you have skipped to here, make sure you've added the variables from the previous step(s), and remove the below variables :
+In your workflow file you will want to update the tag to `v1`
+
+If you have skipped to here, make sure you've added the variables from the previous step(s), and remove the below variables :
 
 ```
 JFROG_FLOWCODE_SERVER_NAME
@@ -52,3 +56,5 @@ JFROG_FLOWCODE_FC_DOCKER_PASSWORD
 JFROG_FLOWCODE_FC_DOCKER_REPO
 docker-image-path
 ```
+
+Once this has run, you can verify it worked by checking the image created and making sure it is `not` in JFrog.
