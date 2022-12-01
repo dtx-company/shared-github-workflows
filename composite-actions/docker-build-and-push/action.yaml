@@ -40,25 +40,9 @@ inputs:
     required: false
     description: "json string to pass to the post-build-script"
     type: string
-  docker-image-path:
-    required: false
-    description: "custom path to access the docker image"
-    type: string
   ecr-image-path:
     required: false
     description: "custom path to access the ECR docker image"
-    type: string
-  JFROG_FLOWCODE_SERVER_NAME:
-    required: true
-    type: string
-  JFROG_FLOWCODE_FC_DOCKER_USERNAME:
-    required: true
-    type: string
-  JFROG_FLOWCODE_FC_DOCKER_PASSWORD:
-    required: true
-    type: string
-  JFROG_FLOWCODE_FC_DOCKER_REPO:
-    required: true
     type: string
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
     required: true
@@ -113,13 +97,6 @@ runs:
       with:
         endpoint: builders
     -
-      name: Login to Artifactory
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
-        username: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_USERNAME }}
-        password: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_PASSWORD }}
-    -
       name: Login to ECR
       uses: docker/login-action@v2
       with:
@@ -138,7 +115,6 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
-          ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}/${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}/${{ inputs.service }}${{ inputs.docker-image-path }}:${{ inputs.release-tag }}
           ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ inputs.release-tag }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
@@ -162,12 +138,9 @@ runs:
       if: inputs.post-build-script != ''
       env:
         # Don't edit or delete these without confirming it won't break the scripts that use them.
-        JFROG_FLOWCODE_SERVER_NAME: ${{ inputs.JFROG_FLOWCODE_SERVER_NAME }}
-        JFROG_FLOWCODE_FC_DOCKER_REPO: ${{ inputs.JFROG_FLOWCODE_FC_DOCKER_REPO }}
         ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
         SERVICE_NAME: ${{ inputs.service }}
         RELEASE_TAG: ${{ inputs.release-tag }}
-        DOCKER_IMAGE_PATH: ${{ inputs.docker-image-path }}
         ECR_IMAGE_PATH: ${{ inputs.ecr-image-path }}
         IMAGE_TAG: ${{ inputs.release-tag }}
         POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
