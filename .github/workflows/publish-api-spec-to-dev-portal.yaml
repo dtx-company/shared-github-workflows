@@ -1,0 +1,22 @@
+name: Publish Open API Spec to Developer Portal
+on:
+  workflow_call:
+    inputs:
+      specfilepath:
+        required: true
+        type: string
+        description: "The path to your open API spec file"
+    secrets:
+      KONG_ADMIN_URL:
+        required: true
+      KONG_ADMIN_TOKEN:
+        required: true
+jobs:
+  publish_spec:
+    runs-on: self-hosted
+    name: Publish API spec file to Kong developer portal
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Publish Spec to Dev Portal
+        run: curl -F contents=@${{ inputs.specfilepath }} -XPUT ${{ secrets.KONG_ADMIN_URL }}/default/files/specs/${GITHUB_REPOSITORY#*/}.yaml -H "kong-admin-token:${{ secrets.KONG_ADMIN_TOKEN }}"
