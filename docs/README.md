@@ -30,11 +30,13 @@ jobs:
 ## build-and-push-and-nonprod-release.yaml
 This workflow should be added to all services that wish to be continuously deployed to fc-services-stg and fc-services-preprod.
 
+<!-- markdown-link-check-disable -->
 Prerequisites:
 * Make sure the service repo has granted read permission to the `fc-cicd-rw` Github user. This user is already a part of the `dtx` team so it is sufficient if the `dtx` team has the required permissions.
 * Make sure the service repo has access to the necessary organization secrets. Check in Settings -> Actions -> Secrets in the repsitory settings. Must have: `ECR_FLOWCODE_[PROD|SDLC]_FC_DOCKER_SERVER`, `ECR_FLOWCODE_[PROD|SDLC]_FC_DOCKER_KEY`, `ECR_FLOWCODE_[PROD|SDLC]_FC_DOCKER_SECRET`, and `PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD`.
 * Make sure the service has helm charts in https://github.com/dtx-company/fc-infra-kubernetes under fc-services-stg and fc-services-preprod.
 * If the service is a Go service, some changes may be required to the Dockerfile. See what was done for [payments](https://github.com/dtx-company/payments/pull/107/files). Test the Dockerfile changes by running `docker build .`. A failing build might result in an error like "COPY failed"; a successful build will result in no error.
+<!-- markdown-link-check-enable -->
 
 To integrate the shared workflow into the service:
 * Add a new workflow in the service repo under `.github/workflows/build-and-push-and-nonprod-release.yaml`, with the content below.
@@ -65,11 +67,13 @@ jobs:
 ## build-and-tag-and-prod-release.yaml
 This workflow should be added to all services that wish to be deployed to fc-services-prod. This workflow is intended to be triggered through manual dispatch. The workflow uses the [semantic-release](https://semantic-release.gitbook.io/semantic-release/) tool.
 
+<!-- markdown-link-check-disable -->
 Prerequisites:
 * Make sure the service has already integrated the conventional-pr-title workflow so that conventional commits are being enforced.
 * Make sure the service repo has granted read permission to the `fc-cicd-rw` Github user. This user is already a part of the `dtx` team so it is sufficient if the `dtx` team has the required permissions.
 * Make sure the service repo has access to the necessary organization secrets. Check in Settings -> Actions -> Secrets in the repsitory settings. Must have: `ECR_FLOWCODE_[PROD|SDLC]_FC_DOCKER_SERVER`, `ECR_FLOWCODE_[PROD|SDLC]_FC_DOCKER_KEY`, `ECR_FLOWCODE_[PROD|SDLC]_FC_DOCKER_SECRET`, and `PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD`.
 * Make sure the service has helm charts in https://github.com/dtx-company/fc-infra-kubernetes under fc-services-prod.
+<!-- markdown-link-check-enable -->
 
 To integrate the shared workflow into a service, add two files.
 
@@ -135,8 +139,10 @@ to build a path to the values.yaml file in the specified deployment repo.
 The following example retrieves the current image tag for the deplopment for
 our projection flow frontend
 
+<!-- markdown-link-check-disable -->
 - Repository: [fc-infra-kubernetes](https://github.com/dtx-company/fc-infra-kubernetes)
 - Path: [cloud/aws/fc-services-prod/use1/primary/frontend/applications/flow-app](https://github.com/dtx-company/fc-infra-kubernetes/tree/trunk/cloud/aws/fc-services-prod/use1/primary/frontend/applications/flow-app)
+<!-- markdown-link-check-enable -->
 
 Note the `with:` block which sets the input values
 
@@ -161,4 +167,6 @@ jobs:
       - run: echo ${{needs.get-image-tag.outputs.imageTag}}
 ```
 ## Full Examples
+<!-- markdown-link-check-disable -->
 See https://github.com/dtx-company/screenshot-service/tree/master/.github/workflows for live examples.
+<!-- markdown-link-check-enable -->

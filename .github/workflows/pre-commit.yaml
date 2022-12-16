@@ -1,0 +1,26 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  pre-commit:
+    # Cannot run on self-hosted because public repository
+    # https://github.com/ChristopherHX/github-act-runner/discussions/40#discussioncomment-1067366
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+    - run: sudo npm install -g markdown-link-check
+    - uses: pre-commit/action@v2.0.0
+      env:
+        SKIP: no-commit-to-branch
