@@ -9,7 +9,6 @@ jobs:
     runs-on: self-hosted
     steps:
       # Configuration docs: https://github.com/marketplace/actions/semantic-pull-request#configuration
-      # We allow types based on conventionalcommit standard: https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog-conventionalcommits/writer-opts.js#L179-L192
       - uses: amannn/action-semantic-pull-request@v4
         with:
           types: |
