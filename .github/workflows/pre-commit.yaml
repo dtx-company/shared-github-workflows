@@ -7,7 +7,10 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: self-hosted
+    # Cannot run on self-hosted because public repository
+    # https://github.com/ChristopherHX/github-act-runner/discussions/40#discussioncomment-1067366
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
