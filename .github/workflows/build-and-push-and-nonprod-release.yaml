@@ -160,10 +160,8 @@ jobs:
 
           echo;
           echo "Setting git config..."
-          git config --local user.name "Bruno Sala"
-          git config --local user.email "connect@brunosala.com"
-          # git config --local user.name ${{ github.event.pusher.name }}
-          # git config --local user.email ${{ github.event.pusher.email }}
+          git config --local user.name ${{ github.event.pusher.name }}
+          git config --local user.email ${{ github.event.pusher.email }}
 
           echo;
           IFS=, read -ra awsenvs <<< "${{ inputs.awsenvs }}" # get list of envs to release to
