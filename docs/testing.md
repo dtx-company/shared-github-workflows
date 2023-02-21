@@ -1,4 +1,4 @@
-# Testing
+# Testing shared-github-workflows
 
 Since the `shared-github-workflows` (SGW) repo is a shared repo across the org (and most build scripts are using a tag that will auto-update), it is extra important to test changes to it.
 
@@ -10,6 +10,7 @@ If you are setting this up for your own repo for testing, replace all mentions o
 
 <!-- markdown-link-check-disable -->
 * Create a branch from the existing SGW repo, ex. feature123
+    * There is a bug in Github Actions that forward slashes (`/`) aren't usable in branches for sourcing
 * In flow repo, update [the reference for SGW](https://github.com/dtx-company/flow/blob/9bedf430a615fe89fac62c18d788ab4994b43acb/.github/workflows/flow-stg-build-and-release.yaml#L11) to point to the branch you just made :
 <!-- markdown-link-check-enable -->
 
