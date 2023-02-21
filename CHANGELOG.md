@@ -8,6 +8,25 @@ A pretty print of the commit lines can be obtained by :
 git log --pretty="- %s" >> CHANGELOG.md
 ```
 
+## v1.0.1
+
+Changing the git config setup for nonprod to reflect prod setup (which accomodates bot interactions better).
+
+### Added
+
+- update: adding testing info (#68)
+- Updating README (#63)
+
+### Fixed
+
+- Chore/sc 70095/resolve conflict w mergify and non prod release (#69)
+- chore: moving readme location (#65)
+- moving off self-hosted because of public repo
+
+### Updating
+
+N/a
+
 ## v1.0.0
 
 This marks the final stage of the JFrog Artifactory to ECR migration, where push/pull is from ECR only and JFrog Artifactory related variables are removed.
