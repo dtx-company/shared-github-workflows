@@ -8,6 +8,20 @@ A pretty print of the commit lines can be obtained by :
 git log --pretty="- %s" >> CHANGELOG.md
 ```
 
+## v1.1.0
+
+Updating Github Actions to fix the `set-output` deprecations.
+
+### Added
+
+### Fixed
+
+- bumping versions
+
+### Updating
+
+n/a
+
 ## v1.0.1
 
 Changing the git config setup for nonprod to reflect prod setup (which accomodates bot interactions better).
