@@ -1,11 +1,6 @@
 name: setup-image-repository
 
 inputs:
-  runner:
-    required: false
-    type: string
-    default: "self-hosted"
-    description: "the github runner to run on, options are {ubuntu-latest, self-hosted, frontend}"
   service:
     required: true
     type: string
