@@ -36,7 +36,7 @@ git tag -d v1
 
 * Tag using the commit that you would like to go back to
 
-``
+```
 git tag v1 abc123
 ```
 
