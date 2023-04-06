@@ -2,9 +2,7 @@
 
 We use semantic versioning to tag SGW as we add features and patches, and also provide a `v1` tag that must be updated to the newest tag / commit.
 
-<!-- markdown-link-check-disable -->
-It's good to save the short commit hash that v1 is set to before you update it, just in case you need to [roll back](#whoops-,-i-need-to-roll-back-a-release).
-<!-- markdown-link-check-enable -->
+It's good to save the short commit hash that v1 is set to before you update it, just in case you need to [roll back](#whoops-i-need-to-roll-back-a-release).
 
 To update :
 
