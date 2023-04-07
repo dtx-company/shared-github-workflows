@@ -12,7 +12,7 @@ inputs:
     description: "custom path to access the ECR docker image"
     type: string
   post-build-script:
-    required: false
+    required: true
     description: "file path of a shell script to run between the build step and the release step, e.g. 'scripts/myscript.sh'"
     type: string
   post-build-script-inputs:
@@ -23,10 +23,10 @@ inputs:
     required: true
     type: string
   STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
-    required: false
+    required: true
     type: string
   STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
-    required: false
+    required: true
     type: string
   ECR_FLOWCODE_FC_DOCKER_SERVER:
     required: true
