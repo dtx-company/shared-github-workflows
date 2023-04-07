@@ -1,0 +1,36 @@
+name: update-poc-infra-kubernetes
+
+inputs:
+  service:
+    required: true
+    type: string
+  project:
+    required: true
+    type: string
+  awsenvs:
+    required: false
+    description: "comma separated list of envs to release to, defaults to 'fc-services-stg/use1,fc-services-preprod/use1'"
+    type: string
+    default: "fc-services-stg/use1,fc-services-preprod/use1"
+  extra-deployments:
+    required: false
+    description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
+    type: string
+  image-tag:
+    required: true
+    type: string
+  PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+        required: true
+  ECR_FLOWCODE_FC_DOCKER_SERVER:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    -
+        name: Checkout kubernetes infra repo
+        uses: actions/checkout@v2
+        with:
+          repository: dtx-company/poc-infra-kubernetes
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
