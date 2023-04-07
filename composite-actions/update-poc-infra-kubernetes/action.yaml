@@ -33,4 +33,4 @@ runs:
         uses: actions/checkout@v2
         with:
           repository: dtx-company/poc-infra-kubernetes
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
