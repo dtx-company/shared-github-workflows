@@ -43,6 +43,7 @@ runs:
           ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ inputs.image-tag }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
+          GITHUB_USERNAME=fc-cicd-rw
           ${{ inputs.docker-build-args }}
         secrets: |
           GITHUB_TOKEN=${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
