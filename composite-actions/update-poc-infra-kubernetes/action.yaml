@@ -36,6 +36,7 @@ runs:
           token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
     -
         name: Update the image tags in values.yaml and push commit
+        shell: bash
         run: |
           echo "Installing yq..."
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
