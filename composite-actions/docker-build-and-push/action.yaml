@@ -132,8 +132,8 @@ runs:
           ${{ inputs.docker-build-args }}
         secrets: |
           GITHUB_TOKEN=${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-          BUF_CICD_USER=${{ inputs.BUF_CICD_USER }}
-          BUF_CICD_TOKEN=${{ inputs.BUF_CICD_TOKEN }}
+          BUF_USER=${{ inputs.BUF_CICD_USER }}
+          BUF_TOKEN=${{ inputs.BUF_CICD_TOKEN }}
     -
       name: Checkout repo to run post-build script
       if: inputs.post-build-script != ''

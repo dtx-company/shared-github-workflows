@@ -123,8 +123,8 @@ jobs:
 
           secrets: |
             GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-            BUF_CICD_USER=${{ secrets.BUF_CICD_USER }}
-            BUF_CICD_TOKEN=${{ secrets.BUF_CICD_TOKEN }}
+            BUF_USER=${{ secrets.BUF_CICD_USER }}
+            BUF_TOKEN=${{ secrets.BUF_CICD_TOKEN }}
 
       - name: Checkout repo to run post-build script
         if: inputs.post-build-script != ''
