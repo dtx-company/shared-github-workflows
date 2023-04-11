@@ -70,7 +70,7 @@ inputs:
     type: string
   BUF_CICD_USER:
     required: false
-    type: string 
+    type: string
   BUF_CICD_TOKEN:
     required: false
     type: string
