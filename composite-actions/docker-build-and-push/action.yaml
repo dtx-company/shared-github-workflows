@@ -68,6 +68,12 @@ inputs:
   ECR_FLOWCODE_FC_DOCKER_SECRET:
     required: true
     type: string
+  BUF_CICD_USER:
+    required: false
+    type: string 
+  BUF_CICD_TOKEN:
+    required: false
+    type: string
 
 runs:
   using: "composite"
@@ -126,6 +132,8 @@ runs:
           ${{ inputs.docker-build-args }}
         secrets: |
           GITHUB_TOKEN=${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          BUF_CICD_USER=${{ inputs.BUF_CICD_USER }}
+          BUF_CICD_TOKEN=${{ inputs.BUF_CICD_TOKEN }}
     -
       name: Checkout repo to run post-build script
       if: inputs.post-build-script != ''

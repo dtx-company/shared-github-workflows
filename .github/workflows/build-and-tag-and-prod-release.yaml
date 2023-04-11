@@ -60,13 +60,16 @@ on:
         required: true
       ECR_FLOWCODE_FC_DOCKER_SECRET:
         required: true
+      BUF_CICD_USER:
+        required: false
+      BUF_CICD_TOKEN:
+        required: false
 
 jobs:
   release:
     runs-on: ${{ inputs.runner }}
     steps:
-      -
-        name: Create Release
+      - name: Create Release
         id: semantic-release
         uses: dtx-company/shared-github-workflows/composite-actions/release-notes@v1.0.0
       - name: build and push docker
@@ -93,3 +96,5 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+          BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
+          BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
