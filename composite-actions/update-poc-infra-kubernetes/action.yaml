@@ -29,7 +29,7 @@ runs:
   steps:
     -
         name: Checkout kubernetes infra repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: dtx-company/poc-infra-kubernetes
           token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
