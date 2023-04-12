@@ -60,9 +60,13 @@ on:
         required: true
       ECR_FLOWCODE_FC_DOCKER_SECRET:
         required: true
+      BUF_CICD_USER:
+        required: false
+      BUF_CICD_TOKEN:
+        required: false
 
 permissions:
-  id-token: write    # Required for aws role assumption
+  id-token: write # Required for aws role assumption
 
 jobs:
   cd:
@@ -70,38 +74,32 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
     steps:
-      -
-        name: Set AWS credentials
+      - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
           aws-secret-access-key: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
           aws-region: us-east-1
-      -
-        name: Set up ECR repo if doesn't exist
+      - name: Set up ECR repo if doesn't exist
         id: ecr-repo
         uses: int128/create-ecr-repository-action@v1
         with:
           repository: ${{ inputs.service }}
-      -
-        name: Set up Docker Context for Buildx
+      - name: Set up Docker Context for Buildx
         id: buildx-context
         run: |
           docker context create builders
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
           endpoint: builders
-      -
-        name: Login to ECR
+      - name: Login to ECR
         uses: docker/login-action@v2
         with:
           registry: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           username: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
           password: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
-      -
-        name: Build and push
+      - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v4
         with:
@@ -125,14 +123,15 @@ jobs:
 
           secrets: |
             GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-      -
-        name: Checkout repo to run post-build script
+            BUF_USER=${{ secrets.BUF_CICD_USER }}
+            BUF_TOKEN=${{ secrets.BUF_CICD_TOKEN }}
+
+      - name: Checkout repo to run post-build script
         if: inputs.post-build-script != ''
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-      -
-        name: Run post-build script
+      - name: Run post-build script
         if: inputs.post-build-script != ''
         env:
           # Don't edit or delete these without confirming it won't break the scripts that use them.
@@ -145,14 +144,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
         run: |
           ./${{ inputs.post-build-script }}
-      -
-        name: Checkout kubernetes infra repo
+      - name: Checkout kubernetes infra repo
         uses: actions/checkout@v2
         with:
           repository: dtx-company/fc-infra-kubernetes
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-      -
-        name: Update the image tags in values.yaml and push commit
+      - name: Update the image tags in values.yaml and push commit
         run: |
           echo "Installing yq..."
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
