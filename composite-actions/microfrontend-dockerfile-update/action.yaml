@@ -33,9 +33,9 @@ runs:
           git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
           echo;
 
-          filename="Dockerfile.test"
+          filename="${{ inputs.dockerfilepath }}"
           echo "Updating ${filename}"
-          sed -i 's/poc-app1:[a-zA-Z0-9]*/poc-app1:newest/' ${filename}
+          sed -i 's/poc-app1:[a-zA-Z0-9]*/poc-app1:newester/' ${filename}
 
           git add ${filename}
 
