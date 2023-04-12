@@ -1,0 +1,50 @@
+name: microfrontend-dockerfile-update
+
+inputs:
+  service:
+    required: true
+    type: string
+  image-tag:
+    required: true
+  dockerfilepath:
+    required: false
+    type: string
+    default: "./Dockerfile" # Dockerfile in the root of the repo
+  PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+        required: true
+  ECR_FLOWCODE_FC_DOCKER_SERVER:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    -
+      name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+    -
+        name: Update the Image Tags in Dockerfile.stg
+        shell: bash
+        run: |
+          echo "Setting git config..."
+          git config --local user.name "${{ github.event.sender.login }}"
+          git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
+          echo;
+
+          filename="Dockerfile.test"
+          echo "Updating ${filename}"
+          sed -i 's/poc-app1:[a-zA-Z0-9]*/poc-app1:newest/' ${filename}
+
+          git add ${filename}
+
+          echo; echo;
+          echo "Pushing to git..."
+          git diff HEAD
+          if [[ $(git diff HEAD) ]]; then
+            git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ inputs.image-tag }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+            git push origin HEAD
+          else
+            echo "Nothing to push"
+          fi
