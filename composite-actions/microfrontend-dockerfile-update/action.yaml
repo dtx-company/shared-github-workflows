@@ -25,7 +25,7 @@ runs:
       with:
         token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
     -
-        name: Update the Image Tags in Dockerfile.stg
+        name: Update the Image Tags in Dockerfile
         shell: bash
         run: |
           echo "Setting git config..."
@@ -35,7 +35,7 @@ runs:
 
           filename="${{ inputs.dockerfilepath }}"
           echo "Updating ${filename}"
-          sed -i 's/poc-app1:[a-zA-Z0-9]*/poc-app1:newester/' ${filename}
+          sed -i 's/${{ inputs.service }}:[a-zA-Z0-9]*/${{ inputs.service }}:${{ inputs.image-tag }}/' ${filename}
 
           git add ${filename}
 
