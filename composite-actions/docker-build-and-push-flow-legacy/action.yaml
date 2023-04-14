@@ -1,4 +1,4 @@
-name: docker-build-and-push-legacy
+name: docker-build-and-push-flow-legacy
 
 inputs:
   runner:
