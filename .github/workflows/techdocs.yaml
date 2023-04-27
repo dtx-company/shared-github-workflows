@@ -13,7 +13,7 @@ jobs:
   publish-techdocs-site:
     # Cannot run on self-hosted because public repository
     # https://github.com/ChristopherHX/github-act-runner/discussions/40#discussioncomment-1067366
-    # runs-on: self-hosted
+    # runs-on: [self-hosted, fc-general]
     runs-on: ubuntu-latest
 
     # The following secrets are required in your CI environment for publishing files to AWS S3.
