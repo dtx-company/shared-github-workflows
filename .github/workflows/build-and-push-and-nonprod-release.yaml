@@ -70,7 +70,7 @@ permissions:
 
 jobs:
   cd:
-    runs-on: [self-hosted, ${{ inputs.runner }}]
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
     env:
       IMAGE_TAG: ${{ github.sha }}
     steps:
