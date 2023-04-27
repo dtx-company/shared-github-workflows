@@ -133,7 +133,7 @@ to build a path to the values.yaml file in the specified deployment repo.
 | project | The team/project owning the deployment | Y | '' |
 | region  | Our regional shorthand value | N | use1 |
 | repository | The repo containing the deployment definition | N | fc-infra-kubernetes |
-| runner | The runner on which the action will run | N | [self-hosted, fc-general] |
+| runner | The runner on which the action will run | N | self-hosted |
 
 
 The following example retrieves the current image tag for the deplopment for
@@ -161,7 +161,7 @@ jobs:
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
   print-image-tag:
-    runs-on: [self-hosted, fc-general]
+    runs-on: self-hosted
     needs: get-image-tag
     steps:
       - run: echo ${{needs.get-image-tag.outputs.imageTag}}
