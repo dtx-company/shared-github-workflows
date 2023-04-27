@@ -6,12 +6,12 @@ on:
       runner:
         required: false
         type: string
-        default: "self-hosted"
-        description: "the github runner to run on, options are {ubuntu-latest, self-hosted}"
+        default: "fc-general"
+        description: "the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}"
 
 jobs:
   release:
-    runs-on: ${{ inputs.runner }}
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
     steps:
       -
         # Checkout is required for publish_release step below to work.

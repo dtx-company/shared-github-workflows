@@ -36,15 +36,15 @@ on:
       runner:
         required: false
         type: string
-        default: "self-hosted"
-        description: "The github runner to run on"
+        default: "fc-general"
+        description: "the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}"
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
 
 jobs:
   get-image-tag:
-    runs-on: ${{ inputs.runner }}
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
     outputs:
       imageTag: ${{ steps.step2.outputs.imageTag }}
     steps:

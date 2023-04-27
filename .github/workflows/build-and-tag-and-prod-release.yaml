@@ -6,8 +6,8 @@ on:
       runner:
         required: false
         type: string
-        default: "self-hosted"
-        description: "the github runner to run on, options are {ubuntu-latest, self-hosted, frontend}"
+        default: "fc-general"
+        description: "the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}"
       service:
         required: true
         type: string
@@ -67,7 +67,7 @@ on:
 
 jobs:
   release:
-    runs-on: ${{ inputs.runner }}
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
     steps:
       - name: Create Release
         id: semantic-release
