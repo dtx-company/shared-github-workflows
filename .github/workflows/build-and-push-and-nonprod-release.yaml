@@ -116,7 +116,7 @@ jobs:
           service: ${{ inputs.service }}
           image-tag: ${{ env.IMAGE_TAG }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
-          post-build-script: tools/scripts/post-build-script.sh
+          post-build-script: ${{ inputs.post-build-script }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
