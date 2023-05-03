@@ -23,6 +23,10 @@ inputs:
     type: string
   image-tag:
     required: true
+  ecr-image-path:
+    required: false
+    description: "custom path to access the ECR docker image"
+    type: string
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
   ECR_FLOWCODE_FC_DOCKER_SERVER:
@@ -66,7 +70,7 @@ runs:
         echo "Pushing to git..."
         git diff HEAD
         if [[ $(git diff HEAD) ]]; then
-          git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ env.IMAGE_TAG }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ inputs.image-tag }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
           git push origin HEAD
         else
           echo "Nothing to push"
