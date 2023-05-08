@@ -60,7 +60,7 @@ runs:
         IFS=, read -ra clusters <<< "${{ inputs.clusters }}" # get list of clusters to release to
         for awsenv in "${awsenvs[@]}"
         do
-          for cluster in "{clusters[@]}"
+          for cluster in "${clusters[@]}"
           do
             filename="cloud/aws/${awsenv}/${cluster}/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
             IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
