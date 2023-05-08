@@ -57,6 +57,7 @@ runs:
         git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
         echo;
         IFS=, read -ra awsenvs <<< "${{ inputs.awsenvs }}" # get list of envs to release to
+        IFS=, read -ra clusters <<< "${{ inputs.clusters }}" # get list of clusters to release to
         for awsenv in "${awsenvs[@]}"
         do
           for cluster in "{clusters[@]}"
