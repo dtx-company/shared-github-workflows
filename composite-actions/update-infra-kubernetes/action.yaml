@@ -78,7 +78,8 @@ runs:
         echo "Pushing to git..."
         git diff HEAD
         if [[ $(git diff HEAD) ]]; then
-          echo "Temp no push"
+          git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ inputs.image-tag }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          git push origin HEAD
         else
           echo "Nothing to push"
         fi
