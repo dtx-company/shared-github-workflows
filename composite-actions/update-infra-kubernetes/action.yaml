@@ -17,6 +17,10 @@ inputs:
     description: "comma separated list of envs to release to, defaults to 'fc-services-stg/use1,fc-services-preprod/use1'"
     type: string
     default: "fc-services-stg/use1,fc-services-preprod/use1"
+  cluster:
+    required: false
+    description: "comma separated list of clusters to release to, defaults to 'primary'"
+    default: "primary"
   extra-deployments:
     required: false
     description: "for services that have multiple deployments in their values.yaml, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
@@ -55,16 +59,19 @@ runs:
         IFS=, read -ra awsenvs <<< "${{ inputs.awsenvs }}" # get list of envs to release to
         for awsenv in "${awsenvs[@]}"
         do
-          filename="cloud/aws/${awsenv}/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
-          IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
-          deployments+=("fc-service")                                       # fc-service is always included
-          echo "Updating ${filename} for deployments ${deployments[*]}..."
-          for d in "${deployments[@]}"
+          for cluster in "{clusters[@]}"
           do
-            path=".${d}.process.image" yq -i eval 'eval(strenv(path)) = "${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}"'  ${filename}
-            path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.ecr-image-path }}${{ inputs.image-tag }}"'  ${filename}
+            filename="cloud/aws/${awsenv}/${cluster}/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+            IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
+            deployments+=("fc-service")                                       # fc-service is always included
+            echo "Updating ${filename} for deployments ${deployments[*]}..."
+            for d in "${deployments[@]}"
+            do
+              path=".${d}.process.image" yq -i eval 'eval(strenv(path)) = "${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}"'  ${filename}
+              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.ecr-image-path }}${{ inputs.image-tag }}"'  ${filename}
+            done
+            git add ${filename}
           done
-          git add ${filename}
         done
         echo; echo;
         echo "Pushing to git..."
