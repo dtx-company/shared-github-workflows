@@ -17,7 +17,7 @@ inputs:
     description: "comma separated list of envs to release to, defaults to 'fc-services-stg/use1,fc-services-preprod/use1'"
     type: string
     default: "fc-services-stg/use1,fc-services-preprod/use1"
-  cluster:
+  clusters:
     required: false
     description: "comma separated list of clusters to release to, defaults to 'primary'"
     default: "primary"
