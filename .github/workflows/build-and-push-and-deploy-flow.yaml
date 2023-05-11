@@ -1,4 +1,4 @@
-name: build-and-push-and-deploy
+name: build-and-push-and-deploy-flow
 
 on:
   workflow_call:
