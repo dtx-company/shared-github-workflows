@@ -1,0 +1,11 @@
+name: test
+
+on:
+  workflow_call:
+
+jobs:
+  cd:
+    runs-on: [self-hosted, fc-general]
+    steps:
+      - name: my-step
+        run: echo "Hello World!"
