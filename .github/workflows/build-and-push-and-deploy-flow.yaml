@@ -1,0 +1,129 @@
+name: build-and-push-and-deploy-flow
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: false
+        type: string
+        default: "fc-general"
+        description: "the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}"
+      service:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
+      image-tag:
+        required: true
+        type: string
+      clusters:
+        required: false
+        description: "comma separated list of clusters to release to, defaults to 'primary'"
+        default: "primary"
+      extra-deployments:
+        required: false
+        description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
+        type: string
+      dockerfilepath:
+        required: false
+        type: string
+        default: "./Dockerfile" # Dockerfile in the root of the repo
+      docker-build-args:
+        required: false
+        type: string
+        description: "newline separated list of non-secret arguments to pass to the docker build, e.g. 'APP_ENV=stg\nFOO=foo'"
+      awsenvs:
+        required: false
+        description: "comma separated list of envs to release to, defaults to 'fc-services-stg/use1,fc-services-preprod/use1'"
+        type: string
+        default: "fc-services-stg/use1,fc-services-preprod/use1"
+      post-build-script:
+        required: false
+        description: "file path of a shell script to run between the build step and the release step, e.g. 'scripts/myscript.sh'"
+        type: string
+      post-build-script-inputs:
+        required: false
+        description: "json string to pass to the post-build-script"
+        type: string
+      ecr-image-path:
+        required: false
+        description: "custom path to access the ECR docker image"
+        type: string
+    secrets:
+      PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+        required: true
+      JFROG_FLOWCODE_FC_PYPI_USERNAME:
+        required: false
+      JFROG_FLOWCODE_FC_PYPI_PASSWORD:
+        required: false
+      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
+        required: false
+      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
+        required: false
+      ECR_FLOWCODE_FC_DOCKER_SERVER:
+        required: true
+      ECR_FLOWCODE_FC_DOCKER_KEY:
+        required: true
+      ECR_FLOWCODE_FC_DOCKER_SECRET:
+        required: true
+      BUF_CICD_USER:
+        required: false
+      BUF_CICD_TOKEN:
+        required: false
+
+permissions:
+  id-token: write # Required for aws role assumption
+
+jobs:
+  cd:
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    steps:
+      - name: Setup Image Repository
+        uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
+        with:
+          service: ${{ inputs.service }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+      - name: Setup Docker
+        uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
+      - name: Docker Build and Push
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@v1
+        with:
+          service: ${{ inputs.service }}
+          image-tag: ${{ inputs.image-tag }}
+          dockerfilepath: ${{ inputs.dockerfilepath }}
+          docker-build-args: ${{ inputs.docker-build-args }}
+          ecr-image-path : ${{ inputs.ecr-image-path }}
+          PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
+          JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
+          BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
+      - name: Run Postbuild Script
+        if: inputs.post-build-script != ''
+        uses: dtx-company/shared-github-workflows/composite-actions/run-postbuild-script-flow@v1
+        with:
+          service: ${{ inputs.service }}
+          image-tag: ${{ inputs.image-tag }}
+          ecr-image-path: ${{ inputs.ecr-image-path }}
+          post-build-script: ${{ inputs.post-build-script }}
+          post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
+          PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+      - name: Update fc-infra-kubernetes
+        uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
+        with:
+          service: ${{ inputs.service }}
+          project: ${{ inputs.project }}
+          awsenvs: ${{ inputs.awsenvs }}
+          extra-deployments: ${{ inputs.extra-deployments }}
+          image-tag: ${{ inputs.image-tag }}
+          clusters: ${{ inputs.clusters }}
+          ecr-image-path: ${{ inputs.ecr-image-path }}
+          PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
