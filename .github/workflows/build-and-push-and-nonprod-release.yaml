@@ -14,6 +14,11 @@ on:
       project:
         required: true
         type: string
+      clusters:
+        required: false
+        type: string
+        description: "comma separated list of clusters to release to, defaults to 'primary'"
+        default: "primary"
       extra-deployments:
         required: false
         description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
@@ -118,6 +123,7 @@ jobs:
           awsenvs: ${{ inputs.awsenvs }}
           extra-deployments: ${{ inputs.extra-deployments }}
           image-tag: ${{ env.IMAGE_TAG }}
+          clusters: ${{ inputs.clusters }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
