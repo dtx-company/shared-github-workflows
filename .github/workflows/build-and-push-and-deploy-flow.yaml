@@ -19,6 +19,7 @@ on:
         type: string
       clusters:
         required: false
+        type: string
         description: "comma separated list of clusters to release to, defaults to 'primary'"
         default: "primary"
       extra-deployments:
