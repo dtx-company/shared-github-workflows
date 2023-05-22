@@ -1,0 +1,93 @@
+name: build-and-push-and-deploy-release
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: false
+        type: string
+        default: "fc-general"
+        description: "the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}"
+      service:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
+      clusters:
+        required: false
+        type: string
+        description: "comma separated list of clusters to release to, defaults to 'primary'"
+        default: "primary"
+      extra-deployments:
+        required: false
+        description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
+        type: string
+      dockerfilepath:
+        required: false
+        type: string
+        default: "./Dockerfile" # Dockerfile in the root of the repo
+      docker-build-args:
+        required: false
+        type: string
+        description: "newline separated list of non-secret arguments to pass to the docker build, e.g. 'APP_ENV=stg\nFOO=foo'"
+      awsenvs:
+        required: false
+        description: "comma separated list of envs to release to, defaults to 'fc-services-stg/use1,fc-services-preprod/use1'"
+        type: string
+        default: "fc-services-stg/use1,fc-services-preprod/use1"
+      ecr-image-path:
+        required: false
+        description: "custom path to access the ECR docker image"
+        type: string
+    secrets:
+      PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+        required: true
+      ECR_FLOWCODE_FC_DOCKER_SERVER:
+        required: true
+      ECR_FLOWCODE_FC_DOCKER_KEY:
+        required: true
+      ECR_FLOWCODE_FC_DOCKER_SECRET:
+        required: true
+
+permissions:
+  id-token: write # Required for aws role assumption
+
+jobs:
+  cd:
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    steps:
+      - name: Create Release
+        id: semantic-release
+        uses: dtx-company/shared-github-workflows/composite-actions/release-notes@v1
+      - name: Setup Image Repository
+        uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
+        with:
+          service: ${{ inputs.service }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+      - name: Setup Docker
+        uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
+      - name: Docker Build and Push
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v1
+        with:
+          service: ${{ inputs.service }}
+          image-tag: ${{ steps.semantic-release.outputs.release-tag }}
+          dockerfilepath: ${{ inputs.dockerfilepath }}
+          docker-build-args: ${{ inputs.docker-build-args }}
+          ecr-image-path : ${{ inputs.ecr-image-path }}
+          PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+      - name: Update fc-infra-kubernetes
+        uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
+        with:
+          service: ${{ inputs.service }}
+          project: ${{ inputs.project }}
+          awsenvs: ${{ inputs.awsenvs }}
+          extra-deployments: ${{ inputs.extra-deployments }}
+          image-tag: ${{ steps.semantic-release.outputs.release-tag }}
+          clusters: ${{ inputs.clusters }}
+          ecr-image-path: ${{ inputs.ecr-image-path }}
+          PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
