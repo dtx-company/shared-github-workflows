@@ -1,4 +1,4 @@
-name: build-and-push-and-deploy
+name: build-and-push-and-deploy-release
 
 on:
   workflow_call:
