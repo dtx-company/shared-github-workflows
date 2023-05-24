@@ -79,6 +79,7 @@ runs:
         aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
         aws_region: us-east-1
+        aws_session_token: ""
     # - name: Run post-build script
     #   shell: bash
     #   env:
