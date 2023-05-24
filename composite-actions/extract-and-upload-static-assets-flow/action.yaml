@@ -55,6 +55,7 @@ runs:
         cmd: jq -r .s3bucket <<< "${inputs.post-build-script-inputs}"
         multiline: true
     - name: Show keywords
+      shell: bash
       run: |
         keywords="${{ steps.bucketExtract.outputs.value }}"
         for keyword in $keywords; do
