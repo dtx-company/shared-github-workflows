@@ -51,7 +51,7 @@ runs:
     - name: Store json payload
       shell: bash
       run: |
-        echo "${inputs.post-build-script-inputs}" >>> payload.json
+        echo "${inputs.post-build-script-inputs}" | tee payload.json
     - name: Extract bucket name from post-build-inputs
       uses: sergeysova/jq-action@v2
       id: bucketExtract
