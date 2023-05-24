@@ -43,15 +43,6 @@ runs:
       uses: actions/checkout@v3
       with:
         token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-    - name: Setup Image Repository
-      uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
-      with:
-        service: flow-app
-        ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
-        ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_KEY }}
-        ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET }}
-    - name: Setup Docker
-      uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
     - uses: shrink/actions-docker-extract@v2
       id: assetExtract
       with:
