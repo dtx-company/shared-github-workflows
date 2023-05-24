@@ -1,0 +1,85 @@
+name: extract-and-upload-static-assets-flow
+
+inputs:
+  service:
+    required: true
+    type: string
+  image-tag:
+    required: true
+    type: string
+  ecr-image-path:
+    required: false
+    description: "custom path to access the ECR docker image"
+    type: string
+  target_bucket:
+    required: true
+    description: "target bucket used to store the extracted assets"
+    type: string
+  # post-build-script:
+  #   required: true
+  #   description: "file path of a shell script to run between the build step and the release step, e.g. 'scripts/myscript.sh'"
+  #   type: string
+  post-build-script-inputs:
+    required: false
+    description: "json string to pass to the post-build-script"
+    type: string
+  PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+    required: true
+    type: string
+  STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
+    required: true
+    type: string
+  STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
+    required: true
+    type: string
+  ECR_FLOWCODE_FC_DOCKER_SERVER:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repo to run post-build script
+      uses: actions/checkout@v3
+      with:
+        token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+    - uses: shrink/actions-docker-extract@v2
+      id: assetExtract
+      with:
+        image: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{inputs.ecr-image-path}}${{inputs.image-tag}}
+        path: .next/static/.
+    - name: Extract bucket name from post-build-inputs
+      uses: sergeysova/jq-action@v2
+      id: bucketExtract
+      with:
+        cmd: jq -r .s3bucket <<< "${inputs.post-build-script-inputs}"
+        multiline: true
+    - name: Show keywords
+      run: |
+        keywords="${{ steps.bucketExtract.outputs.value }}"
+        for keyword in $keywords; do
+          echo "$keyword"
+        done
+    # - name: Upload Build Artifact
+    #   uses: keithweaver/aws-s3-github-action@v1.0.0
+    #   with:
+    #     command: sync
+    #     source: ./platform-app-build.zip
+    #     destination: s3://${{ inputs.target_bucket}}/_next/static
+    #     aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+    #     aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+    #     aws_region: us-east-1
+    # - name: Run post-build script
+    #   shell: bash
+    #   env:
+    #     # Don't edit or delete these without confirming it won't break the scripts that use them.
+    #     ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+    #     SERVICE_NAME: ${{ inputs.service }}
+    #     RELEASE_TAG: ${{ inputs.image-tag }}
+    #     ECR_IMAGE_PATH: ${{ inputs.ecr-image-path }}
+    #     IMAGE_TAG: ${{ inputs.image-tag }}
+    #     POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
+    #     AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+    #   run: |
+    #     ./${{ inputs.post-build-script }}
