@@ -48,11 +48,15 @@ runs:
       with:
         image: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{inputs.ecr-image-path}}${{inputs.image-tag}}
         path: .next/static/.
+    - name: Store json payload
+      shell: bash
+      run: |
+        echo "${inputs.post-build-script-inputs}" >>> payload.json
     - name: Extract bucket name from post-build-inputs
       uses: sergeysova/jq-action@v2
       id: bucketExtract
       with:
-        cmd: jq -r .s3bucket <<< "${inputs.post-build-script-inputs}"
+        cmd: jq -r .s3bucket payload.json
         multiline: true
     - name: Show keywords
       shell: bash
