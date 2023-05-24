@@ -73,8 +73,8 @@ runs:
       uses: keithweaver/aws-s3-github-action@v1.0.0
       with:
         command: cp
-        source: ${{ steps.assetExtract.outputs.destination }}
-        destination: s3://${{ steps.bucketExtract.outputs.value }}/_last/static/
+        source: ./${{ steps.assetExtract.outputs.destination }}
+        destination: s3://${{ steps.bucketExtract.outputs.value }}/_last/static
         aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
         aws_region: us-east-1
