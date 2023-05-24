@@ -60,24 +60,24 @@ runs:
       with:
         cmd: jq -r .s3bucket payload.json
         multiline: true
-    - name: Show keywords
-      shell: bash
-      run: |
-        keywords="${{ steps.bucketExtract.outputs.value }}"
-        for keyword in $keywords; do
-          echo "$keyword"
-        done
+    # - name: Show keywords
+    #   shell: bash
+    #   run: |
+    #     keywords="${{ steps.bucketExtract.outputs.value }}"
+    #     for keyword in $keywords; do
+    #       echo "$keyword"
+    #     done
 
-        ls ${{ steps.assetExtract.outputs.destination }}
-    # - name: Upload Build Artifact
-    #   uses: keithweaver/aws-s3-github-action@v1.0.0
-    #   with:
-    #     command: sync
-    #     source: ./platform-app-build.zip
-    #     destination: s3://${{ inputs.target_bucket}}/_next/static
-    #     aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-    #     aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
-    #     aws_region: us-east-1
+    #     ls ${{ steps.assetExtract.outputs.destination }}
+    - name: Upload Build Artifact
+      uses: keithweaver/aws-s3-github-action@v1.0.0
+      with:
+        command: sync
+        source: ${{ steps.assetExtract.outputs.destination }}
+        destination: s3://${{ steps.bucketExtract.outputs.value }}/_last/static
+        aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+        aws_region: us-east-1
     # - name: Run post-build script
     #   shell: bash
     #   env:
