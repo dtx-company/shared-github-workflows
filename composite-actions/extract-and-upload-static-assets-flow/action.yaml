@@ -49,9 +49,11 @@ runs:
         image: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{inputs.ecr-image-path}}${{inputs.image-tag}}
         path: .next/static/.
     - name: Store json payload
-      shell: bash
-      run: |
-        echo "${{ inputs.post-build-script-inputs }}" | tee payload.json
+      id: create-json
+      uses: jsdaniell/create-json@v1.2.2
+      with:
+        name: "payload.json"
+        json: ${{ inputs.post-build-script-inputs }}
     - name: Extract bucket name from post-build-inputs
       uses: sergeysova/jq-action@v2
       id: bucketExtract
