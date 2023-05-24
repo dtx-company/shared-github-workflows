@@ -73,6 +73,7 @@ runs:
       uses: keithweaver/aws-s3-github-action@v1.0.0
       with:
         command: cp
+        flags: --recursive
         source: ./${{ steps.assetExtract.outputs.destination }}
         destination: s3://${{ steps.bucketExtract.outputs.value }}/_last/static
         aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
