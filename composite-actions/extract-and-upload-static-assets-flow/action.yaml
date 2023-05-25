@@ -56,7 +56,9 @@ runs:
       with:
         cmd: jq -r .s3bucket payload.json
         multiline: true
-    # - name: Upload Build Artifact
+    # This should work, but experiences Access Denied issues so
+    # we've switched to the bash script below
+    # - name: Upload Assets
     #   uses: keithweaver/aws-s3-github-action@v1.0.0
     #   with:
     #     command: sync
@@ -67,7 +69,7 @@ runs:
     #     aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
     #     aws_region: us-east-1
     #     aws_session_token: ""
-    - name: Run post-build script
+    - name: Upload Assets
       shell: bash
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
