@@ -11,21 +11,10 @@ inputs:
     required: false
     description: "custom path to access the ECR docker image"
     type: string
-  # target_bucket:
-  #   required: true
-  #   description: "target bucket used to store the extracted assets"
-  #   type: string
-  # post-build-script:
-  #   required: true
-  #   description: "file path of a shell script to run between the build step and the release step, e.g. 'scripts/myscript.sh'"
-  #   type: string
   post-build-script-inputs:
     required: false
     description: "json string to pass to the post-build-script"
     type: string
-  # PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
-  #   required: true
-  #   type: string
   STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
     required: true
     type: string
