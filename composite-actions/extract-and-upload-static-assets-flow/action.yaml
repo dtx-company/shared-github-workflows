@@ -69,28 +69,30 @@ runs:
     #     done
 
     #     ls ${{ steps.assetExtract.outputs.destination }}
-    - name: Upload Build Artifact
-      uses: keithweaver/aws-s3-github-action@v1.0.0
-      with:
-        command: sync
-        # flags: --recursive
-        source: ./${{ steps.assetExtract.outputs.destination }}
-        destination: s3://${{ steps.bucketExtract.outputs.value }}/_last/static
-        aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
-        aws_region: us-east-1
-        aws_session_token: ""
-    # - name: Run post-build script
-    #   shell: bash
-    #   env:
-    #     # Don't edit or delete these without confirming it won't break the scripts that use them.
-    #     ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-    #     SERVICE_NAME: ${{ inputs.service }}
-    #     RELEASE_TAG: ${{ inputs.image-tag }}
-    #     ECR_IMAGE_PATH: ${{ inputs.ecr-image-path }}
-    #     IMAGE_TAG: ${{ inputs.image-tag }}
-    #     POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
-    #     AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
-    #   run: |
-    #     ./${{ inputs.post-build-script }}
+    # - name: Upload Build Artifact
+    #   uses: keithweaver/aws-s3-github-action@v1.0.0
+    #   with:
+    #     command: sync
+    #     # flags: --recursive
+    #     source: ./${{ steps.assetExtract.outputs.destination }}
+    #     destination: s3://${{ steps.bucketExtract.outputs.value }}/_last/static
+    #     aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+    #     aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+    #     aws_region: us-east-1
+    #     aws_session_token: ""
+    - name: Run post-build script
+      shell: bash
+      env:
+        # Don't edit or delete these without confirming it won't break the scripts that use them.
+        ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+        SERVICE_NAME: ${{ inputs.service }}
+        RELEASE_TAG: ${{ inputs.image-tag }}
+        ECR_IMAGE_PATH: ${{ inputs.ecr-image-path }}
+        IMAGE_TAG: ${{ inputs.image-tag }}
+        POST_BUILD_SCRIPT_INPUTS: ${{ inputs.post-build-script-inputs }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+      run: |
+        echo "Syncing app: ${{ steps.assetExtract.outputs.destination }} to bucket: s3://${{ steps.bucketExtract.outputs.value }}/_last/static..."
+        # Path in S3 must be "_next/static" to be compatible with what frontend expects.
+        AWS_REGION=us-east-1 aws s3 sync ${{ steps.assetExtract.outputs.destination }} s3://${{ steps.bucketExtract.outputs.value }}/_last/static
