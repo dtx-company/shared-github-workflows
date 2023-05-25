@@ -103,16 +103,28 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
           BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
-      - name: Run Postbuild Script
+      # - name: Run Postbuild Script
+      #   if: inputs.post-build-script != ''
+      #   uses: dtx-company/shared-github-workflows/composite-actions/run-postbuild-script-flow@v1
+      #   with:
+      #     service: ${{ inputs.service }}
+      #     image-tag: ${{ inputs.image-tag }}
+      #     ecr-image-path: ${{ inputs.ecr-image-path }}
+      #     post-build-script: ${{ inputs.post-build-script }}
+      #     post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
+      #     PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+      #     STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+      #     STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+      #     ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+      - name: Extract flow-app assets
+        # I'm currently using the same criteria as the old action above to control execution
         if: inputs.post-build-script != ''
-        uses: dtx-company/shared-github-workflows/composite-actions/run-postbuild-script-flow@v1
+        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@jst/asset-extract
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ inputs.image-tag }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
-          post-build-script: ${{ inputs.post-build-script }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
