@@ -15,7 +15,7 @@ on:
         required: true
         type: string
       image-tag:
-        required: true
+        required: false
         type: string
       clusters:
         required: false
@@ -93,7 +93,7 @@ jobs:
         uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@v1
         with:
           service: ${{ inputs.service }}
-          image-tag: ${{ inputs.image-tag }}
+          image-tag: ${{ github.sha }}
           dockerfilepath: ${{ inputs.dockerfilepath }}
           docker-build-args: ${{ inputs.docker-build-args }}
           ecr-image-path : ${{ inputs.ecr-image-path }}
@@ -108,7 +108,7 @@ jobs:
         uses: dtx-company/shared-github-workflows/composite-actions/run-postbuild-script-flow@v1
         with:
           service: ${{ inputs.service }}
-          image-tag: ${{ inputs.image-tag }}
+          image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script: ${{ inputs.post-build-script }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
@@ -123,7 +123,7 @@ jobs:
           project: ${{ inputs.project }}
           awsenvs: ${{ inputs.awsenvs }}
           extra-deployments: ${{ inputs.extra-deployments }}
-          image-tag: ${{ inputs.image-tag }}
+          image-tag: ${{ github.sha }}
           clusters: ${{ inputs.clusters }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
