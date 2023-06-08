@@ -50,9 +50,6 @@ on:
       ECR_FLOWCODE_FC_DOCKER_SECRET:
         required: true
 
-permissions:
-  id-token: write # Required for aws role assumption
-
 jobs:
   cd:
     runs-on: [self-hosted, "${{ inputs.runner }}"]
