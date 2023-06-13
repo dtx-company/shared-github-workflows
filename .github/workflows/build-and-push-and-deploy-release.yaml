@@ -43,12 +43,20 @@ on:
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
+      JFROG_FLOWCODE_FC_PYPI_USERNAME:
+        required: false
+      JFROG_FLOWCODE_FC_PYPI_PASSWORD:
+        required: false
       ECR_FLOWCODE_FC_DOCKER_SERVER:
         required: true
       ECR_FLOWCODE_FC_DOCKER_KEY:
         required: true
       ECR_FLOWCODE_FC_DOCKER_SECRET:
         required: true
+      BUF_CICD_USER:
+        required: false
+      BUF_CICD_TOKEN:
+        required: false
 
 jobs:
   cd:
@@ -75,7 +83,11 @@ jobs:
           docker-build-args: ${{ inputs.docker-build-args }}
           ecr-image-path : ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
+          JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
+          BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
