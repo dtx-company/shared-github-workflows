@@ -90,7 +90,7 @@ jobs:
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
       - name: Docker Build and Push
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@v1
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v1
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}

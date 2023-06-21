@@ -22,8 +22,20 @@ inputs:
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
     required: true
     type: string
+  JFROG_FLOWCODE_FC_PYPI_USERNAME:
+    required: false
+    type: string
+  JFROG_FLOWCODE_FC_PYPI_PASSWORD:
+    required: false
+    type: string
   ECR_FLOWCODE_FC_DOCKER_SERVER:
     required: true
+    type: string
+  BUF_CICD_USER:
+    required: false
+    type: string
+  BUF_CICD_TOKEN:
+    required: false
     type: string
 
 runs:
@@ -43,8 +55,12 @@ runs:
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
           GITHUB_USERNAME=fc-cicd-rw
+          JFROG_FLOWCODE_FC_PYPI_USERNAME=${{ inputs.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
+          JFROG_FLOWCODE_FC_PYPI_PASSWORD=${{ inputs.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
           BUILD_ID=${{ github.sha }}
           VERSION=${{ github.sha }}
           ${{ inputs.docker-build-args }}
         secrets: |
           GITHUB_TOKEN=${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          BUF_USER=${{ inputs.BUF_CICD_USER }}
+          BUF_TOKEN=${{ inputs.BUF_CICD_TOKEN }}
