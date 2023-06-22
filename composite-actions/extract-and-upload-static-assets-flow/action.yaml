@@ -1,0 +1,56 @@
+name: extract-and-upload-static-assets-flow
+
+inputs:
+  service:
+    required: true
+    type: string
+  image-tag:
+    required: true
+    type: string
+  ecr-image-path:
+    required: false
+    description: "custom path to access the ECR docker image"
+    type: string
+  post-build-script-inputs:
+    required: false
+    description: "json string to pass to the post-build-script"
+    type: string
+  STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
+    required: true
+    type: string
+  STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
+    required: true
+    type: string
+  ECR_FLOWCODE_FC_DOCKER_SERVER:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - uses: shrink/actions-docker-extract@v2
+      id: assetExtract
+      with:
+        image: ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{inputs.ecr-image-path}}${{inputs.image-tag}}
+        path: .next/static/.
+    - name: Store json payload
+      id: create-json
+      uses: jsdaniell/create-json@v1.2.2
+      with:
+        name: "payload.json"
+        json: ${{ inputs.post-build-script-inputs }}
+    - name: Extract bucket name from post-build-inputs
+      uses: sergeysova/jq-action@v2
+      id: bucketExtract
+      with:
+        cmd: jq -r .s3bucket payload.json
+        multiline: true
+    - name: Upload Assets
+      shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+      run: |
+        echo "Syncing app: ${{ steps.assetExtract.outputs.destination }} to bucket: s3://${{ steps.bucketExtract.outputs.value }}/_next/static..."
+        # Path in S3 must be "_next/static" to be compatible with what frontend expects.
+        AWS_REGION=us-east-1 aws s3 sync ${{ steps.assetExtract.outputs.destination }} s3://${{ steps.bucketExtract.outputs.value }}/_next/static
