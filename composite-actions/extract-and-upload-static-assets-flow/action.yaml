@@ -45,19 +45,6 @@ runs:
       with:
         cmd: jq -r .s3bucket payload.json
         multiline: true
-    # This should work, but experiences Access Denied issues so
-    # we've switched to the bash script below
-    # - name: Upload Assets
-    #   uses: keithweaver/aws-s3-github-action@v1.0.0
-    #   with:
-    #     command: sync
-    #     # flags: --recursive
-    #     source: ./${{ steps.assetExtract.outputs.destination }}
-    #     destination: s3://${{ steps.bucketExtract.outputs.value }}/_next/static
-    #     aws_access_key_id: ${{ inputs.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-    #     aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
-    #     aws_region: us-east-1
-    #     aws_session_token: ""
     - name: Upload Assets
       shell: bash
       env:
