@@ -35,6 +35,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Unset AWS creds env vars
+      run: |
+        echo "AWS_ACCESS_KEY_ID=" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=" >> $GITHUB_ENV
+        echo "AWS_SESSION_TOKEN=" >> $GITHUB_ENV
+        echo "AWS_DEFAULT_REGION=" >> $GITHUB_ENV
+        echo "AWS_REGION=" >> $GITHUB_ENV
     - name: Checkout repo to run post-build script
       uses: actions/checkout@v3
       with:
