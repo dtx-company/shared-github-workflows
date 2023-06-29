@@ -108,7 +108,7 @@ jobs:
         uses: dtx-company/shared-github-workflows/composite-actions/run-postbuild-script-flow@mr-test_s3_upload
         with:
           service: ${{ inputs.service }}
-          image-tag: ${{ inputs.image-tag }}
+          image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script: ${{ inputs.post-build-script }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
