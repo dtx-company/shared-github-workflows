@@ -36,6 +36,7 @@ runs:
   using: "composite"
   steps:
     - name: Unset AWS creds env vars
+      shell: bash
       run: |
         echo "AWS_ACCESS_KEY_ID=" >> $GITHUB_ENV
         echo "AWS_SECRET_ACCESS_KEY=" >> $GITHUB_ENV
