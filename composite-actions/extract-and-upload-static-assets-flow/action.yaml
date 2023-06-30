@@ -34,8 +34,8 @@ runs:
         echo "AWS_ACCESS_KEY_ID=" >> $GITHUB_ENV
         echo "AWS_SECRET_ACCESS_KEY=" >> $GITHUB_ENV
         echo "AWS_SESSION_TOKEN=" >> $GITHUB_ENV
-        echo "AWS_DEFAULT_REGION=" >> $GITHUB_ENV
-        echo "AWS_REGION=" >> $GITHUB_ENV
+        #echo "AWS_DEFAULT_REGION=" >> $GITHUB_ENV
+        #echo "AWS_REGION=" >> $GITHUB_ENV
     - uses: shrink/actions-docker-extract@v2
       id: assetExtract
       with:
