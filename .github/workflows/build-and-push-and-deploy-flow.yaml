@@ -104,7 +104,6 @@ jobs:
           BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
           BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
       - name: Extract flow-app assets
-        # I'm currently using the same criteria as the old action above to control execution
         if: inputs.post-build-script != ''
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
