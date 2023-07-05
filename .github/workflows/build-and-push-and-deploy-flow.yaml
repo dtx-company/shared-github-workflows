@@ -105,7 +105,7 @@ jobs:
           BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
       - name: Extract flow-app assets
         if: inputs.post-build-script != ''
-        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@mr-test_s3_upload
+        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
