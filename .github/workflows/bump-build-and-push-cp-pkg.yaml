@@ -1,0 +1,68 @@
+name: Package Crossplane Configuration
+
+on:
+  workflow_call:
+    inputs:
+      package_name:
+        required: true
+        type: string
+    secrets:
+      ECR_FLOWCODE_FC_DOCKER_KEY:
+        required: true
+      ECR_FLOWCODE_FC_DOCKER_SECRET:
+        required: true
+
+jobs:
+  configuration:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 0
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
+          aws-secret-access-key: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+          aws-region: us-east-1
+      - name: Set up ECR repo if doesn't exist
+        id: ecr-repo
+        uses: int128/create-ecr-repository-action@v1
+        with:
+          repository: ${{ inputs.package_name }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: create-release
+        id: release
+        run: |
+          npm i -g @flowcode/semantic-release-fc-shared-config
+          GITHUB_TOKEN=${{ github.token }} npx semantic-release@19 -e $(npm root -g)/@flowcode/semantic-release-fc-shared-config
+          echo ::set-output name=release_tag::$(git tag --sort committerdate | tail -1)
+      - name: Build
+        uses: crossplane-contrib/xpkg-action@v0.2.0
+        with:
+          channel: stable
+          version: current
+          command: build configuration -f ${{ github.workspace }} --name package.xpkg --ignore 'configuration/*,.github/*,.github/*/*,examples/*,hack/*'
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Push xpkg
+        uses: crossplane-contrib/xpkg-action@master
+        with:
+          command: push configuration -f package.xpkg ${{ steps.login-ecr.outputs.registry }}/${{ inputs.package_name }}:${{ steps.release.outputs.release_tag }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Update manifest
+        run: |
+          sed -i -e "s|${{ steps.login-ecr.outputs.registry }}/${{ inputs.package_name }}:.*|${{ steps.login-ecr.outputs.registry }}/${{ inputs.package_name }}:${{ steps.release.outputs.release_tag }}|g" ./configuration/configuration.yaml
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: '.'
+          message: "github bot package version update"
+          signoff: true
