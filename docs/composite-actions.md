@@ -35,6 +35,14 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
 ```
 
+## setup-image-repository
+
+This composite action handles setting up both the image repository (if not already present) and access to the image repository for future steps. Please see the `action.yaml` file for variables.
+
+## setup-docker
+
+This composite action handles setting up the environment to run Docker in. Please see the `action.yaml` file for variables.
+
 ## docker-build-and-push
 
 This composite action handles building a Docker image and pushing it to an image repository. Please see the `action.yaml` file for variables.
@@ -57,14 +65,6 @@ Prerequisites :
 ## DEPRECATED run-postbuild-script-flow
 
 DEPRECATED This composite action handles extracting static assets from the flow Docker image and uploading them to S3. Please see the `action.yaml` file for variables.
-
-## setup-docker
-
-This composite action handles setting up the environment to run Docker in. Please see the `action.yaml` file for variables.
-
-## setup-image-repository
-
-This composite action handles setting up both the image repository (if not already present) and access to the image repository for future steps. Please see the `action.yaml` file for variables.
 
 ## update-infra-kubernetes
 

@@ -1,4 +1,4 @@
-# Github Actions Deploy Workflows
+# Github Actions Workflows - Deploys
 
 Reusable GitHub Actions Workflows for deploys.
 

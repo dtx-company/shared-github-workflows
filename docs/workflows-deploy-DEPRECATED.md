@@ -1,4 +1,4 @@
-# DEPRECATED Github Actions Deploy Workflows
+# DEPRECATED Github Actions Workflows - Deploys
 
 Reusable GitHub Actions Workflows for deploys.
 
