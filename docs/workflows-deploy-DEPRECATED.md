@@ -1,5 +1,6 @@
-# shared-github-workflows
-Reusable GitHub Actions workflows.
+# DEPRECATED Github Actions Deploy Workflows
+
+Reusable GitHub Actions Workflows for deploys.
 
 ## [DEPRECATED] build-and-push-and-nonprod-release.yaml
 This workflow should be added to all services that wish to be continuously deployed to fc-services-stg and fc-services-preprod.

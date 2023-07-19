@@ -1,5 +1,6 @@
-# shared-github-workflows
-Reusable GitHub Actions workflows.
+# Composite Actions
+
+Reusable composite actions.
 
 ## How to Use
 

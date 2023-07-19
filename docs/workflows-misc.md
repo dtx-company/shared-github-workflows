@@ -1,7 +1,9 @@
-# shared-github-workflows
-Reusable GitHub Actions workflows.
+# Github Actions Deploy Workflows
+
+Reusable GitHub Actions Workflows for misc / non-deploys.
 
 ## conventional-pr-title.yaml
+
 This workflow should be added to all services to ensure that pull request titles (and by extension, squashed commit messages in the default branch) follow the conventional commit standard. This is important because other tooling will assume conventional commits in order to autogenerate release notes and bump up the semantic version on every release to production.
 
 Prerequisites:

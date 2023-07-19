@@ -1,5 +1,6 @@
-# shared-github-workflows
-Reusable GitHub Actions workflows.
+# Github Actions Deploy Workflows
+
+Reusable GitHub Actions Workflows for deploys.
 
 ## build-and-push-and-deploy.yaml
 This workflow should be added to all services that wish to be continuously deployed **without** a release. By default deploys to both staging and preprod.
