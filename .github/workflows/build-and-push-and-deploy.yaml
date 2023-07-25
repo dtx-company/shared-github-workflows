@@ -78,10 +78,11 @@ jobs:
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
       - name: Docker Build and Push
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v1
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@chore/use-s3-cache
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
+          branch-name: ${{ github.head_ref || github.ref_name }}
           dockerfilepath: ${{ inputs.dockerfilepath }}
           docker-build-args: ${{ inputs.docker-build-args }}
           ecr-image-path : ${{ inputs.ecr-image-path }}
@@ -91,6 +92,8 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
           BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
+          GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }}
+          GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
