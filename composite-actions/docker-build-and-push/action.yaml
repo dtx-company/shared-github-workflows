@@ -7,9 +7,6 @@ inputs:
   image-tag:
     required: true
     type: string
-  branch-name:
-    required: true
-    type: string
   dockerfilepath:
     required: false
     type: string
@@ -40,12 +37,6 @@ inputs:
   BUF_CICD_TOKEN:
     required: false
     type: string
-  GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID:
-    required: true
-    type: string
-  GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
-    required: true
-    type: string
 
 runs:
   using: "composite"
@@ -57,10 +48,8 @@ runs:
         push: true
         file: ${{ inputs.dockerfilepath }}
         github-token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-        cache-from: |
-            type=s3,region=us-east-1,access_key_id=${{ inputs.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }},secret_access_key=${{ inputs.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }},bucket=fc-sre-use1-prod-gha-cache,region=us-east-1,name=${{ inputs.service }}:${{ inputs.branch-name }}
-            type=s3,region=us-east-1,access_key_id=${{ inputs.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }},secret_access_key=${{ inputs.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }},bucket=fc-sre-use1-prod-gha-cache,region=us-east-1,name=${{ inputs.service }}:${{ inputs.image-tag }}
-        cache-to: type=s3,region=us-east-1,access_key_id=${{ inputs.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }},secret_access_key=${{ inputs.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }},bucket=fc-sre-use1-prod-gha-cache,region=us-east-1,mode=max,name=${{ inputs.service }}:${{ inputs.branch-name }};${{ inputs.service }}:${{ inputs.image-tag }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
         tags: |
           ${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}:${{ inputs.ecr-image-path }}${{ inputs.image-tag }}
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
