@@ -99,6 +99,8 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
+      - name: Test
+        run: echo ${{ inputs.environment }}
       - name: Docker Build and Push
         env:
           FLOWLYTICS_FC_GEOGRAPHY_CHART: ${{ secrets.FLOWLYTICS_FC_GEOGRAPHY_CHART }}
