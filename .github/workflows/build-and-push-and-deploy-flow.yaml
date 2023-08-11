@@ -22,6 +22,11 @@ on:
         type: string
         description: "comma separated list of clusters to release to, defaults to 'primary'"
         default: "primary"
+      environment:
+        required: false
+        type: string
+        description: "GitHub environment from the 'flow' repository to source environment secrets from"
+        default: "reviewapp"
       extra-deployments:
         required: false
         description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
@@ -83,6 +88,7 @@ permissions:
 jobs:
   cd:
     runs-on: [self-hosted, "${{ inputs.runner }}"]
+    environment: ${{ inputs.environment }}
     steps:
       - name: Setup Image Repository
         uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
@@ -94,13 +100,33 @@ jobs:
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
       - name: Docker Build and Push
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@v1
+        env:
+          FLOWLYTICS_FC_GEOGRAPHY_CHART: ${{ secrets.FLOWLYTICS_FC_GEOGRAPHY_CHART }}
+          GENERATOR_CACHE_REDIS_PASSWORD: ${{ secrets.GENERATOR_CACHE_REDIS_PASSWORD }}
+          GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
+          OPENSEA_API_KEY: ${{ secrets.OPENSEA_API_KEY }}
+          OPTIMIZELY_SDK_KEY: ${{ secrets.OPTIMIZELY_SDK_KEY }}
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_FLOW_STARTER_CHECKOUT_KEY: ${{ secrets.STRIPE_FLOW_STARTER_CHECKOUT_KEY }}
+          STRIPE_PRINT_STORE_CHECKOUT_KEY: ${{ secrets.STRIPE_PRINT_STORE_CHECKOUT_KEY }}
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@fix/flow-app-secrets
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
           branch-name: ${{ github.head_ref || github.ref_name }}
           dockerfilepath: ${{ inputs.dockerfilepath }}
-          docker-build-args: ${{ inputs.docker-build-args }}
+          docker-build-args: |
+            ${{ inputs.docker-build-args }}
+            FLOWLYTICS_FC_GEOGRAPHY_CHART=${{ secrets.FLOWLYTICS_FC_GEOGRAPHY_CHART }}
+            GENERATOR_CACHE_REDIS_PASSWORD=${{ secrets.GENERATOR_CACHE_REDIS_PASSWORD }}
+            GOOGLE_CLOUD_API_KEY=${{ secrets.GOOGLE_CLOUD_API_KEY }}
+            OPENSEA_API_KEY=${{ secrets.OPENSEA_API_KEY }}
+            OPTIMIZELY_SDK_KEY=${{ secrets.OPTIMIZELY_SDK_KEY }}
+            RECAPTCHA_SITE_KEY=${{ secrets.RECAPTCHA_SITE_KEY }}
+            STRIPE_API_KEY=${{ env.STRIPE_API_KEY }}
+            STRIPE_FLOW_STARTER_CHECKOUT_KEY=${{ secrets.STRIPE_FLOW_STARTER_CHECKOUT_KEY }}
+            STRIPE_PRINT_STORE_CHECKOUT_KEY=${{ secrets.STRIPE_PRINT_STORE_CHECKOUT_KEY }}
           ecr-image-path : ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
