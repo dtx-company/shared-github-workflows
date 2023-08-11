@@ -81,6 +81,24 @@ on:
         required: false
       BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
         required: false
+      FLOWLYTICS_FC_GEOGRAPHY_CHART:
+        required: false
+      GENERATOR_CACHE_REDIS_PASSWORD:
+        required: false
+      GOOGLE_CLOUD_API_KEY:
+        required: false
+      OPENSEA_API_KEY:
+        required: false
+      OPTIMIZELY_SDK_KEY:
+        required: false
+      RECAPTCHA_SITE_KEY:
+        required: false
+      STRIPE_API_KEY:
+        required: false
+      STRIPE_FLOW_STARTER_CHECKOUT_KEY:
+        required: false
+      STRIPE_PRINT_STORE_CHECKOUT_KEY:
+        required: false
 
 permissions:
   id-token: write # Required for aws role assumption
