@@ -56,16 +56,18 @@ on:
         required: false
         description: "custom path to access the ECR docker image"
         type: string
+      static-assets-aws-access-key-id:
+        required: true
+        type: string
+      static-assets-aws-secret-access-key:
+        required: true
+        type: string
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: false
       JFROG_FLOWCODE_FC_PYPI_USERNAME:
         required: false
       JFROG_FLOWCODE_FC_PYPI_PASSWORD:
-        required: false
-      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
-        required: false
-      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
         required: false
       ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER:
         required: false
@@ -153,8 +155,8 @@ jobs:
           image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ inputs.static-assets-aws-access-key-id }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ inputs.static-assets-aws-secret-access-key }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
