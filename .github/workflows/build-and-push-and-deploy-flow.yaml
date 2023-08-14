@@ -102,10 +102,20 @@ on:
       STRIPE_PRINT_STORE_CHECKOUT_KEY:
         required: false
 
+# ${{ secrets.STG_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
+# ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
+
 permissions:
   id-token: write # Required for aws role assumption
 
 jobs:
+  set-stg-variables:
+    name: Set staging variables
+    runs-on: [self-hosted, fc-general]
+    if: inputs.environment == 'stg'
+    env:
+      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STG_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
+      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
   cd:
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     environment:
@@ -155,8 +165,8 @@ jobs:
           image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ inputs.static-assets-aws-access-key-id }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ inputs.static-assets-aws-secret-access-key }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ env.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ env.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
