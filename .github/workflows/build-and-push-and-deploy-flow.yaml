@@ -108,6 +108,24 @@ jobs:
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     environment:
       name: ${{ inputs.environment }}
+    env:
+      # Creds come from Parameter Store `/fc/frontend/application/githubactions-flow/service-accounts/aws/fc-frontend-global-stg-githubactions-flow`
+      # STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STG_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
+      # STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
+      ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
+      # ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_KEY }}
+      # ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET }}
+      # BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }}
+      # BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }} 
+      # FLOWLYTICS_FC_GEOGRAPHY_CHART: ${{ secrets.FLOWLYTICS_FC_GEOGRAPHY_CHART }}
+      # GENERATOR_CACHE_REDIS_PASSWORD: ${{ secrets.GENERATOR_CACHE_REDIS_PASSWORD }}
+      # GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
+      # OPENSEA_API_KEY: ${{ secrets.OPENSEA_API_KEY }}
+      # OPTIMIZELY_SDK_KEY: ${{ secrets.OPTIMIZELY_SDK_KEY }}
+      # RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+      # STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+      # STRIPE_FLOW_STARTER_CHECKOUT_KEY: ${{ secrets.STRIPE_FLOW_STARTER_CHECKOUT_KEY }}
+      # STRIPE_PRINT_STORE_CHECKOUT_KEY: ${{ secrets.STRIPE_PRINT_STORE_CHECKOUT_KEY }}
     steps:
       - name: Setup Image Repository
         uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
