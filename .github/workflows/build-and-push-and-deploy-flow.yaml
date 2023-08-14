@@ -77,9 +77,9 @@ on:
         required: false
       BUF_CICD_TOKEN:
         required: false
-      BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID:
+      GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID:
         required: false
-      BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
+      GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
         required: false
       FLOWLYTICS_FC_GEOGRAPHY_CHART:
         required: false
@@ -108,36 +108,16 @@ jobs:
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     environment:
       name: ${{ inputs.environment }}
-    env:
-      # Creds come from Parameter Store `/fc/frontend/application/githubactions-flow/service-accounts/aws/fc-frontend-global-stg-githubactions-flow`
-      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STG_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
-      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
-      ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
-      ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_KEY }}
-      ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET }}
-      BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }}
-      BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }} 
-      FLOWLYTICS_FC_GEOGRAPHY_CHART: ${{ secrets.FLOWLYTICS_FC_GEOGRAPHY_CHART }}
-      GENERATOR_CACHE_REDIS_PASSWORD: ${{ secrets.GENERATOR_CACHE_REDIS_PASSWORD }}
-      GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
-      OPENSEA_API_KEY: ${{ secrets.OPENSEA_API_KEY }}
-      OPTIMIZELY_SDK_KEY: ${{ secrets.OPTIMIZELY_SDK_KEY }}
-      RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
-      STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-      STRIPE_FLOW_STARTER_CHECKOUT_KEY: ${{ secrets.STRIPE_FLOW_STARTER_CHECKOUT_KEY }}
-      STRIPE_PRINT_STORE_CHECKOUT_KEY: ${{ secrets.STRIPE_PRINT_STORE_CHECKOUT_KEY }}
     steps:
       - name: Setup Image Repository
         uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
         with:
           service: ${{ inputs.service }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ env.ECR_FLOWCODE_FC_DOCKER_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ env.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
-      - name: Test
-        run: echo ${{ inputs.environment }}
       - name: Docker Build and Push
         uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@fix/flow-app-secrets
         with:
@@ -153,18 +133,18 @@ jobs:
             OPENSEA_API_KEY=${{ secrets.OPENSEA_API_KEY }}
             OPTIMIZELY_SDK_KEY=${{ secrets.OPTIMIZELY_SDK_KEY }}
             RECAPTCHA_SITE_KEY=${{ secrets.RECAPTCHA_SITE_KEY }}
-            STRIPE_API_KEY=${{ env.STRIPE_API_KEY }}
+            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
             STRIPE_FLOW_STARTER_CHECKOUT_KEY=${{ secrets.STRIPE_FLOW_STARTER_CHECKOUT_KEY }}
             STRIPE_PRINT_STORE_CHECKOUT_KEY=${{ secrets.STRIPE_PRINT_STORE_CHECKOUT_KEY }}
           ecr-image-path : ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
           BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
-          GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ env.BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID }}
-          GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ env.BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
+          GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }}
+          GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
       - name: Extract flow-app assets
         if: inputs.post-build-script != ''
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
@@ -173,9 +153,9 @@ jobs:
           image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ env.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ env.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
@@ -187,4 +167,4 @@ jobs:
           clusters: ${{ inputs.clusters }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
