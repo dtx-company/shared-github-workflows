@@ -56,12 +56,6 @@ on:
         required: false
         description: "custom path to access the ECR docker image"
         type: string
-      static-assets-aws-access-key-id:
-        required: true
-        type: string
-      static-assets-aws-secret-access-key:
-        required: true
-        type: string
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: false
@@ -109,13 +103,6 @@ permissions:
   id-token: write # Required for aws role assumption
 
 jobs:
-  set-stg-variables:
-    name: Set staging variables
-    runs-on: [self-hosted, fc-general]
-    if: inputs.environment == 'stg'
-    env:
-      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STG_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
-      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
   cd:
     runs-on: [self-hosted, "${{ inputs.runner }}"]
     environment:
@@ -157,16 +144,16 @@ jobs:
           BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
           GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }}
           GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
-      - name: Extract flow-app assets
-        if: inputs.post-build-script != ''
+      - name: Extract flow-app assets for staging
+        if: inputs.post-build-script != '' && inputs.environment == 'reviewapp' # TODO: Change this to stg
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ env.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ env.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STG_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
