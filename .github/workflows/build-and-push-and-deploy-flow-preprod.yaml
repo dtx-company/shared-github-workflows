@@ -1,5 +1,7 @@
 name: build-and-push-and-deploy-flow
 
+# Releases the flow app to preprod
+
 on:
   workflow_call:
     inputs:
@@ -22,11 +24,6 @@ on:
         type: string
         description: "comma separated list of clusters to release to, defaults to 'primary'"
         default: "primary"
-      environment:
-        required: false
-        type: string
-        description: "GitHub environment from the 'flow' repository to source environment secrets from"
-        default: "reviewapp"
       extra-deployments:
         required: false
         description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
@@ -64,11 +61,11 @@ on:
       JFROG_FLOWCODE_FC_PYPI_PASSWORD:
         required: false
       ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER:
-        required: false
+        required: true
       ECR_FLOWCODE_SDLC_FC_DOCKER_KEY:
-        required: false
+        required: true
       ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET:
-        required: false
+        required: true
       BUF_CICD_USER:
         required: false
       BUF_CICD_TOKEN:
@@ -102,20 +99,15 @@ permissions:
 jobs:
   cd:
     runs-on: [self-hosted, "${{ inputs.runner }}"]
-    environment:
-      name: ${{ inputs.environment }}
-    env:
-      ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ inputs.environment == 'prod' && secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER || secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
-      ECR_FLOWCODE_FC_DOCKER_KEY: ${{ inputs.environment == 'prod' && secrets.ECR_FLOWCODE_PROD_FC_DOCKER_KEY || secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_KEY }}
-      ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ inputs.environment == 'prod' && secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SECRET || secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET }}
+    environment: preprod
     steps:
       - name: Setup Image Repository
         uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
         with:
           service: ${{ inputs.service }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ env.ECR_FLOWCODE_FC_DOCKER_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ env.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET }}
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
       - name: Docker Build and Push
@@ -136,30 +128,16 @@ jobs:
             STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
             STRIPE_FLOW_STARTER_CHECKOUT_KEY=${{ secrets.STRIPE_FLOW_STARTER_CHECKOUT_KEY }}
             STRIPE_PRINT_STORE_CHECKOUT_KEY=${{ secrets.STRIPE_PRINT_STORE_CHECKOUT_KEY }}
-          ecr-image-path : ${{ inputs.ecr-image-path }}
+          ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
           BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
           BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
           GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }}
           GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
-      - name: Extract flow-app assets for staging
-        # Staging assets have their own bucket
-        if: inputs.post-build-script != '' && inputs.environment == 'stg'
-        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
-        with:
-          service: ${{ inputs.service }}
-          image-tag: ${{ github.sha }}
-          ecr-image-path: ${{ inputs.ecr-image-path }}
-          post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STG_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
       - name: Extract flow-app assets for preprod
-        # Preprod assets have their own bucket
-        if: inputs.post-build-script != '' && inputs.environment == 'preprod'
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
           service: ${{ inputs.service }}
@@ -168,19 +146,7 @@ jobs:
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PREPROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.PREPROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-      - name: Extract flow-app assets for prod
-        # Prod assets have their own bucket
-        if: inputs.post-build-script != '' && inputs.environment == 'prod'
-        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
-        with:
-          service: ${{ inputs.service }}
-          image-tag: ${{ github.sha }}
-          ecr-image-path: ${{ inputs.ecr-image-path }}
-          post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
@@ -192,4 +158,4 @@ jobs:
           clusters: ${{ inputs.clusters }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ env.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
