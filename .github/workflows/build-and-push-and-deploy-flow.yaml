@@ -109,9 +109,6 @@ jobs:
       ECR_FLOWCODE_FC_DOCKER_KEY: ${{ inputs.environment == 'prod' && secrets.ECR_FLOWCODE_PROD_FC_DOCKER_KEY || secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_KEY }}
       ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ inputs.environment == 'prod' && secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SECRET || secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET }}
     steps:
-      - name: Fail fast # TODO: Take this out later
-        if: inputs.environment == 'prod'
-        run: exit 1
       - name: Setup Image Repository
         uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
         with:
@@ -122,7 +119,7 @@ jobs:
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
       - name: Docker Build and Push
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@fix/flow-app-secrets
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push-flow@v1
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
@@ -150,7 +147,7 @@ jobs:
           GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
       - name: Extract flow-app assets for staging
         # Staging assets have their own bucket
-        if: inputs.post-build-script != '' && inputs.environment == 'reviewapp' # TODO: Change this to stg
+        if: inputs.post-build-script != '' && inputs.environment == 'stg'
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
           service: ${{ inputs.service }}
