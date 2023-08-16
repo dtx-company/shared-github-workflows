@@ -1,4 +1,4 @@
-name: build-and-push-and-deploy-flow
+name: build-and-push-and-deploy-flow-prod
 
 # Releases the flow app to production
 
