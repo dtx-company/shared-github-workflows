@@ -51,6 +51,10 @@ on:
         required: false
         description: "custom path to access the ECR docker image"
         type: string
+      upload-sourcemaps:
+        required: false
+        description: "upload sourcemap files to DataDog"
+        type: string
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
@@ -76,6 +80,8 @@ on:
         required: false
       BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
         required: false
+      DATADOG_API_KEY:
+        required: true
 
 permissions:
   id-token: write # Required for aws role assumption
@@ -112,7 +118,7 @@ jobs:
           GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
       - name: Extract flow-app assets
         if: inputs.post-build-script != ''
-        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
+        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@feat/datadog-sourcemaps
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
@@ -121,6 +127,8 @@ jobs:
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          upload-sourcemaps: ${{ inputs.upload-sourcemaps }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
