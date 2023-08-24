@@ -118,7 +118,7 @@ jobs:
           GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
       - name: Extract flow-app assets
         if: inputs.post-build-script != ''
-        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@feat/datadog-sourcemaps
+        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
