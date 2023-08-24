@@ -24,6 +24,13 @@ inputs:
   ECR_FLOWCODE_FC_DOCKER_SERVER:
     required: true
     type: string
+  upload-sourcemaps:
+    required: false
+    description: "upload sourcemap files to DataDog"
+    type: string
+  DATADOG_API_KEY:
+    required: false
+    type: string
 
 runs:
   using: "composite"
@@ -34,6 +41,11 @@ runs:
         echo "AWS_ACCESS_KEY_ID=" >> $GITHUB_ENV
         echo "AWS_SECRET_ACCESS_KEY=" >> $GITHUB_ENV
         echo "AWS_SESSION_TOKEN=" >> $GITHUB_ENV
+    - name: Setup Node.js
+      if: inputs.upload-sourcemaps == 'true'
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
     - uses: shrink/actions-docker-extract@v2
       id: assetExtract
       with:
@@ -61,3 +73,11 @@ runs:
         aws_secret_access_key: ${{ inputs.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
         aws_region: us-east-1
         aws_session_token: ""
+    - name: Upload sourcemaps to DataDog
+      if: inputs.upload-sourcemaps == 'true'
+      shell: bash
+      run: |
+        DATADOG_API_KEY='${{ inputs.DATADOG_API_KEY }}' npx @datadog/datadog-ci sourcemaps upload ./${{ steps.assetExtract.outputs.destination }} \
+        --service=${{ inputs.service }} \
+        --release-version=${{ inputs.image-tag }} \
+        --minified-path-prefix=https://app.flowcode.com/_next/static
