@@ -81,7 +81,7 @@ on:
       BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
         required: false
       DATADOG_API_KEY:
-        required: true
+        required: false
 
 permissions:
   id-token: write # Required for aws role assumption
