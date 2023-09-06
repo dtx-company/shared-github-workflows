@@ -96,6 +96,8 @@ on:
         required: true
       PROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY:
         required: true
+      DATADOG_API_KEY:
+        required: false
 
 permissions:
   id-token: write # Required for aws role assumption
@@ -151,6 +153,8 @@ jobs:
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
+          upload-sourcemaps: "true" # This should be uniquely "true" for prod deployments
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
