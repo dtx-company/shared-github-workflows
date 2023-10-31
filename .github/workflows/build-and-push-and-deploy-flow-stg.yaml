@@ -148,7 +148,7 @@ jobs:
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STG_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
       - name: Update fc-infra-kubernetes
-        uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
+        uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@retry-just-git-push
         with:
           service: ${{ inputs.service }}
           project: ${{ inputs.project }}
