@@ -77,6 +77,7 @@ runs:
         echo; echo;
         echo "Check for any changes since repo was checked out..."
         git pull
+        echo; echo;
         echo "Pushing to git..."
         git diff HEAD
         if [[ $(git diff HEAD) ]]; then
