@@ -76,6 +76,7 @@ runs:
         done
         echo; echo;
         echo "Pushing to git..."
+        git pull
         git diff HEAD
         if [[ $(git diff HEAD) ]]; then
           git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ inputs.image-tag }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
