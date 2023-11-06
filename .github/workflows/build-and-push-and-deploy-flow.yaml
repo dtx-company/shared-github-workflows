@@ -55,6 +55,11 @@ on:
         required: false
         description: "upload sourcemap files to DataDog"
         type: string
+      asset-path:
+        required: false
+        description: "custom path to expected static assets"
+        type: string
+        default: ".next/static/."
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
@@ -129,6 +134,7 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
           upload-sourcemaps: ${{ inputs.upload-sourcemaps }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          asset-path: ${{ inputs.asset-path }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
