@@ -137,7 +137,7 @@ runs:
     -
       name: Checkout repo to run post-build script
       if: inputs.post-build-script != ''
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
     -
@@ -158,7 +158,7 @@ runs:
         ./${{ inputs.post-build-script }}
     -
       name: Checkout kubernetes infra repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: dtx-company/fc-infra-kubernetes
         token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}

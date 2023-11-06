@@ -17,7 +17,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
       - name: create-release
         id: release
         run: |
@@ -56,13 +56,13 @@ jobs:
         with:
           command: push configuration -f package.xpkg ${{ steps.login-ecr.outputs.registry }}/${{ inputs.package_name }}:${{ steps.release.outputs.release_tag }}
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Update manifest
         run: |
           sed -i -e "s|${{ steps.login-ecr.outputs.registry }}/${{ inputs.package_name }}:.*|${{ steps.login-ecr.outputs.registry }}/${{ inputs.package_name }}:${{ steps.release.outputs.release_tag }}|g" ./configuration/configuration.yaml
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
-          add: '.'
+          add: "."
           message: "github bot package version update"
           signoff: true
