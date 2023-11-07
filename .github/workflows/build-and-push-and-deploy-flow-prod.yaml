@@ -53,6 +53,11 @@ on:
         required: false
         description: "custom path to access the ECR docker image"
         type: string
+      asset-path:
+        required: false
+        description: "custom path to expected static assets"
+        type: string
+        default: ".next/static/."
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: false
@@ -155,6 +160,7 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
           upload-sourcemaps: "true" # This should be uniquely "true" for prod deployments
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          asset-path: ${{ inputs.asset-path }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:

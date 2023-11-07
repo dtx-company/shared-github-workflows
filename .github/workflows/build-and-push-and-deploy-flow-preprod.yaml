@@ -53,6 +53,11 @@ on:
         required: false
         description: "custom path to access the ECR docker image"
         type: string
+      asset-path:
+        required: false
+        description: "custom path to expected static assets"
+        type: string
+        default: ".next/static/."
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: false
@@ -147,6 +152,7 @@ jobs:
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PREPROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.PREPROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
+          asset-path: ${{ inputs.asset-path }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
         with:
