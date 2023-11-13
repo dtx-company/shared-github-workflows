@@ -81,7 +81,7 @@ on:
         required: false
       FLOWLYTICS_FC_GEOGRAPHY_CHART:
         required: false
-      GENERATOR_CACHE_REDIS_PASSWORD:
+      AUTH_CACHE_REDIS_PASSWORD:
         required: false
       GOOGLE_CLOUD_API_KEY:
         required: false
@@ -131,7 +131,7 @@ jobs:
           docker-build-args: |
             ${{ inputs.docker-build-args }}
             FLOWLYTICS_FC_GEOGRAPHY_CHART=${{ secrets.FLOWLYTICS_FC_GEOGRAPHY_CHART }}
-            GENERATOR_CACHE_REDIS_PASSWORD=${{ secrets.GENERATOR_CACHE_REDIS_PASSWORD }}
+            AUTH_CACHE_REDIS_PASSWORD=${{ secrets.AUTH_CACHE_REDIS_PASSWORD }}
             GOOGLE_CLOUD_API_KEY=${{ secrets.GOOGLE_CLOUD_API_KEY }}
             OPENSEA_API_KEY=${{ secrets.OPENSEA_API_KEY }}
             OPTIMIZELY_SDK_KEY=${{ secrets.OPTIMIZELY_SDK_KEY }}
