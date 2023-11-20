@@ -154,7 +154,7 @@ jobs:
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_SDLC_FC_DOCKER_SERVER }}
           asset-path: ${{ inputs.asset-path }}
       - name: Update fc-infra-kubernetes
-        uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
+        uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@fix-infra-git-push
         with:
           service: ${{ inputs.service }}
           project: ${{ inputs.project }}
