@@ -79,6 +79,9 @@ runs:
               git add ${filename}
             done
           done
+          echo; echo;
+          echo "Checking for changes..."
+          git pull
           git diff HEAD
           if [[ $(git diff HEAD) ]]; then
             echo; echo;
