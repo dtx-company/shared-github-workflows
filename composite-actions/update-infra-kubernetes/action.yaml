@@ -80,15 +80,15 @@ runs:
               git add ${filename}
             done
           done
-          echo; echo;
-          echo "Checking for changes..."
-          git pull
-          git diff HEAD
           if [[ $(git diff HEAD) ]]; then
             echo; echo;
             echo "Creating git commit..."
             git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ inputs.image-tag }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
           fi
+          echo; echo;
+          echo "Getting the latest from origin..."
+          git pull
+          git diff HEAD
           echo; echo;
           echo "Pushing to git..."
           git push origin HEAD
