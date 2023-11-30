@@ -48,14 +48,12 @@ jobs:
     outputs:
       imageTag: ${{ steps.step2.outputs.imageTag }}
     steps:
-      -
-        id: step1
-        uses: actions/checkout@v2
+      - id: step1
+        uses: actions/checkout@v4
         with:
           repository: dtx-company/${{ inputs.repository }}
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-      -
-        id: step2
+      - id: step2
         run: |
           echo "Installing yq..."
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
