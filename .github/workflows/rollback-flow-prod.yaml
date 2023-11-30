@@ -1,0 +1,104 @@
+name: rollback-flow-prod
+
+# Releases the flow app to production
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: false
+        type: string
+        default: "fc-general"
+        description: "the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}"
+      service:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
+      image-tag:
+        required: false
+        type: string
+      clusters:
+        required: false
+        type: string
+        description: "comma separated list of clusters to release to, defaults to 'primary'"
+        default: "primary"
+      extra-deployments:
+        required: false
+        description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
+        type: string
+      awsenvs:
+        required: false
+        description: "comma separated list of envs to release to, defaults to 'fc-services-stg/use1,fc-services-preprod/use1'"
+        type: string
+        default: "fc-services-stg/use1,fc-services-preprod/use1"
+      post-build-script-inputs:
+        required: false
+        description: "json string to pass to the post-build-script"
+        type: string
+      ecr-image-path:
+        required: false
+        description: "custom path to access the ECR docker image"
+        type: string
+      asset-path:
+        required: false
+        description: "custom path to expected static assets"
+        type: string
+        default: ".next/static/."
+    secrets:
+      PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
+        required: false
+      ECR_FLOWCODE_PROD_FC_DOCKER_SERVER:
+        required: true
+      ECR_FLOWCODE_PROD_FC_DOCKER_KEY:
+        required: true
+      ECR_FLOWCODE_PROD_FC_DOCKER_SECRET:
+        required: true
+      PROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID:
+        required: true
+      PROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY:
+        required: true
+      DATADOG_API_KEY:
+        required: false
+
+permissions:
+  id-token: write # Required for aws role assumption
+
+jobs:
+  cd:
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    environment: prod
+    steps:
+      - name: Setup Image Repository
+        uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
+        with:
+          service: ${{ inputs.service }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SECRET }}
+      - name: Extract flow-app assets
+        uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
+        with:
+          service: ${{ inputs.service }}
+          image-tag: ${{ github.sha }}
+          ecr-image-path: ${{ inputs.ecr-image-path }}
+          post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
+          upload-sourcemaps: "true" # This should be uniquely "true" for prod deployments
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          asset-path: ${{ inputs.asset-path }}
+      - name: Update fc-infra-kubernetes
+        uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
+        with:
+          service: ${{ inputs.service }}
+          project: ${{ inputs.project }}
+          awsenvs: ${{ inputs.awsenvs }}
+          extra-deployments: ${{ inputs.extra-deployments }}
+          image-tag: ${{ github.sha }}
+          clusters: ${{ inputs.clusters }}
+          ecr-image-path: ${{ inputs.ecr-image-path }}
+          PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
