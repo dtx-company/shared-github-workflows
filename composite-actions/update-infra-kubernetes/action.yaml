@@ -46,43 +46,49 @@ runs:
         repository: dtx-company/${{ inputs.repo }}
         token: ${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
     - name: Update the image tags in values.yaml and push commit
-      shell: bash
-      run: |
-        echo "Installing yq..."
-        sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-        sudo chmod a+x /usr/local/bin/yq
-        echo;
-        echo "Setting git config..."
-        git config --local user.name "${{ github.event.sender.login }}"
-        git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
-        echo;
-        IFS=, read -ra awsenvs <<< "${{ inputs.awsenvs }}" # get list of envs to release to
-        IFS=, read -ra clusters <<< "${{ inputs.clusters }}" # get list of clusters to release to
-        for awsenv in "${awsenvs[@]}"
-        do
-          for cluster in "${clusters[@]}"
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 15
+        max_attempts: 3
+        retry_on: error
+        shell: bash
+        command: |
+          echo "Installing yq..."
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+          echo;
+          echo "Setting git config..."
+          git config --local user.name "${{ github.event.sender.login }}"
+          git config --local user.email "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
+          git config --global pull.rebase true
+          echo;
+          IFS=, read -ra awsenvs <<< "${{ inputs.awsenvs }}" # get list of envs to release to
+          IFS=, read -ra clusters <<< "${{ inputs.clusters }}" # get list of clusters to release to
+          for awsenv in "${awsenvs[@]}"
           do
-            filename="cloud/aws/${awsenv}/${cluster}/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
-            IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
-            deployments+=("fc-service")                                       # fc-service is always included
-            echo "Updating ${filename} for deployments ${deployments[*]}..."
-            for d in "${deployments[@]}"
+            for cluster in "${clusters[@]}"
             do
-              path=".${d}.process.image" yq -i eval 'eval(strenv(path)) = "${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}"'  ${filename}
-              path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.ecr-image-path }}${{ inputs.image-tag }}"'  ${filename}
+              filename="cloud/aws/${awsenv}/${cluster}/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+              IFS=, read -ra deployments <<< "${{ inputs.extra-deployments }}"  # split by comma into an array
+              deployments+=("fc-service")                                       # fc-service is always included
+              echo "Updating ${filename} for deployments ${deployments[*]}..."
+              for d in "${deployments[@]}"
+              do
+                path=".${d}.process.image" yq -i eval 'eval(strenv(path)) = "${{ inputs.ECR_FLOWCODE_FC_DOCKER_SERVER }}/${{ inputs.service }}"'  ${filename}
+                path=".${d}.process.tag" yq -i eval 'eval(strenv(path)) = "${{ inputs.ecr-image-path }}${{ inputs.image-tag }}"'  ${filename}
+              done
+              git add ${filename}
             done
-            git add ${filename}
           done
-        done
-        echo; echo;
-        echo "Check for any changes since repo was checked out..."
-        git pull
-        echo; echo;
-        echo "Pushing to git..."
-        git diff HEAD
-        if [[ $(git diff HEAD) ]]; then
-          git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ inputs.image-tag }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          if [[ $(git diff HEAD) ]]; then
+            echo; echo;
+            echo "Creating git commit..."
+            git commit -m "cicd-auto: bump ${{ inputs.service }} to ${{ inputs.image-tag }}" -m "triggered from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          fi
+          echo; echo;
+          echo "Getting the latest from origin..."
+          git pull
+          git diff HEAD
+          echo; echo;
+          echo "Pushing to git..."
           git push origin HEAD
-        else
-          echo "Nothing to push"
-        fi
