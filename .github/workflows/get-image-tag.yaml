@@ -23,8 +23,8 @@ on:
       cluster:
         required: false
         type: string
-        default: "primary"
-        description: "The cluster name. Ex: primary"
+        default: "services-126"
+        description: "The cluster name. Ex: services-126"
       service:
         required: true
         type: string
