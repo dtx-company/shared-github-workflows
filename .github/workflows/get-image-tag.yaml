@@ -20,6 +20,11 @@ on:
         type: string
         default: "use1"
         description: "The short aws region name. Ex: use1"
+      cluster:
+        required: false
+        type: string
+        default: "services-126"
+        description: "The cluster name. Ex: services-126"
       service:
         required: true
         type: string
@@ -61,7 +66,7 @@ jobs:
 
           echo;
           echo "Getting image tag value..."
-          filename="cloud/aws/${{ inputs.account}}/${{ inputs.region}}/primary/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
+          filename="cloud/aws/${{ inputs.account}}/${{ inputs.region}}/${{ inputs.cluster }}/${{ inputs.project }}/applications/${{ inputs.service }}/values.yaml"
           imageTag=$(yq e '.fc-service.process.tag' ${filename})
           echo imageTag value: $imageTag
           echo "::set-output name=imageTag::${imageTag}"
