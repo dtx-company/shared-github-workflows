@@ -63,6 +63,8 @@ on:
 
 permissions:
   id-token: write # Required for aws role assumption
+  contents: read
+  packages: read
 
 jobs:
   cd:
@@ -84,7 +86,7 @@ jobs:
           image-tag: ${{ github.sha }}
           dockerfilepath: ${{ inputs.dockerfilepath }}
           docker-build-args: ${{ inputs.docker-build-args }}
-          ecr-image-path : ${{ inputs.ecr-image-path }}
+          ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
