@@ -44,6 +44,8 @@ on:
         description: "custom path to access the ECR docker image"
         type: string
     secrets:
+      FC_CICD_RF_USER_PAT:
+        required: false
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
       JFROG_FLOWCODE_FC_PYPI_USERNAME:
@@ -80,13 +82,14 @@ jobs:
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
       - name: Docker Build and Push
-        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@v1
+        uses: dtx-company/shared-github-workflows/composite-actions/docker-build-and-push@more-permissions
         with:
           service: ${{ inputs.service }}
           image-tag: ${{ github.sha }}
           dockerfilepath: ${{ inputs.dockerfilepath }}
           docker-build-args: ${{ inputs.docker-build-args }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
+          FC_CICD_RF_USER_PAT: ${{ secrets.FC_CICD_RF_USER_PAT }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}

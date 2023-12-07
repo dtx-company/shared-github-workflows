@@ -19,6 +19,9 @@ inputs:
     required: false
     description: "custom path to access the ECR docker image"
     type: string
+  FC_CICD_RF_USER_PAT:
+    required: false
+    type: string
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
     required: true
     type: string
@@ -61,6 +64,6 @@ runs:
           VERSION=${{ github.sha }}
           ${{ inputs.docker-build-args }}
         secrets: |
-          GITHUB_TOKEN=${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
+          GITHUB_TOKEN=${{ inputs.FC_CICD_RF_USER_PAT }}
           BUF_USER=${{ inputs.BUF_CICD_USER }}
           BUF_TOKEN=${{ inputs.BUF_CICD_TOKEN }}
