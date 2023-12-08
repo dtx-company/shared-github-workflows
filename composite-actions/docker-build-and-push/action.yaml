@@ -21,6 +21,7 @@ inputs:
     type: string
   FC_CICD_RW_USER_PAT:
     required: false
+    description: "Personal Access Token for the fc-cicd-rw user (intent: pull private repos in the build process)"
     type: string
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
     required: true
