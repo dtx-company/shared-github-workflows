@@ -19,7 +19,7 @@ inputs:
     required: false
     description: "custom path to access the ECR docker image"
     type: string
-  FC_CICD_RF_USER_PAT:
+  FC_CICD_RW_USER_PAT:
     required: false
     type: string
   PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
@@ -58,13 +58,13 @@ runs:
         # GITHUB_USERNAME and GITHUB_PASSWORD are needed to pull private repos in the build process.
         build-args: |
           GITHUB_USERNAME=fc-cicd-rw
-          PAT=${{ inputs.FC_CICD_RF_USER_PAT }}
+          PAT=${{ inputs.FC_CICD_RW_USER_PAT }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME=${{ inputs.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD=${{ inputs.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
           BUILD_ID=${{ github.sha }}
           VERSION=${{ github.sha }}
           ${{ inputs.docker-build-args }}
         secrets: |
-          GITHUB_TOKEN=${{ inputs.FC_CICD_RF_USER_PAT }}
+          GITHUB_TOKEN=${{ inputs.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           BUF_USER=${{ inputs.BUF_CICD_USER }}
           BUF_TOKEN=${{ inputs.BUF_CICD_TOKEN }}
