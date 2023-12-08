@@ -46,16 +46,16 @@ on:
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
+      JFROG_FLOWCODE_FC_PYPI_USERNAME:
+        required: false
+      JFROG_FLOWCODE_FC_PYPI_PASSWORD:
+        required: false
       ECR_FLOWCODE_FC_DOCKER_SERVER:
         required: true
       ECR_FLOWCODE_FC_DOCKER_KEY:
         required: true
       ECR_FLOWCODE_FC_DOCKER_SECRET:
         required: true
-      JFROG_FLOWCODE_FC_PYPI_USERNAME:
-        required: false
-      JFROG_FLOWCODE_FC_PYPI_PASSWORD:
-        required: false
       BUF_CICD_USER:
         required: false
       BUF_CICD_TOKEN:
