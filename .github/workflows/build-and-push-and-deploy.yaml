@@ -56,8 +56,6 @@ on:
         required: false
       JFROG_FLOWCODE_FC_PYPI_PASSWORD:
         required: false
-      FC_CICD_RW_USER_PAT:
-        required: false
       BUF_CICD_USER:
         required: false
       BUF_CICD_TOKEN:
@@ -87,7 +85,6 @@ jobs:
           dockerfilepath: ${{ inputs.dockerfilepath }}
           docker-build-args: ${{ inputs.docker-build-args }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
-          FC_CICD_RW_USER_PAT: ${{ secrets.FC_CICD_RW_USER_PAT }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
           JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
