@@ -1,15 +1,13 @@
 name: build-and-push-and-deploy-flow-preprod
 
-# Releases the flow app to preprod
-
 on:
   workflow_call:
     inputs:
       runner:
         required: false
         type: string
-        default: "fc-general"
-        description: "the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}"
+        default: 'fc-general'
+        description: 'the self-hosted github runner to run on, options are {fc-general, frontend, fc-node, fc-go}'
       service:
         required: true
         type: string
@@ -23,7 +21,7 @@ on:
         required: false
         type: string
         description: "comma separated list of clusters to release to, defaults to 'primary'"
-        default: "primary"
+        default: 'primary'
       extra-deployments:
         required: false
         description: "for services that have multiple deployments in their values.yaml in fc-infra-kubernetes, provide the names of the other deployments e.g. 'worker,beat' as a comma separated list"
@@ -31,7 +29,7 @@ on:
       dockerfilepath:
         required: false
         type: string
-        default: "./Dockerfile" # Dockerfile in the root of the repo
+        default: './Dockerfile' # Dockerfile in the root of the repo
       docker-build-args:
         required: false
         type: string
@@ -40,24 +38,24 @@ on:
         required: false
         description: "comma separated list of envs to release to, defaults to 'fc-services-stg/use1,fc-services-preprod/use1'"
         type: string
-        default: "fc-services-stg/use1,fc-services-preprod/use1"
+        default: 'fc-services-stg/use1,fc-services-preprod/use1'
       post-build-script:
         required: false
         description: "file path of a shell script to run between the build step and the release step, e.g. 'scripts/myscript.sh'"
         type: string
       post-build-script-inputs:
         required: false
-        description: "json string to pass to the post-build-script"
+        description: 'json string to pass to the post-build-script'
         type: string
       ecr-image-path:
         required: false
-        description: "custom path to access the ECR docker image"
+        description: 'custom path to access the ECR docker image'
         type: string
       asset-path:
         required: false
-        description: "custom path to expected static assets"
+        description: 'custom path to expected static assets'
         type: string
-        default: ".next/static/."
+        default: '.next/static/.'
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: false
@@ -71,39 +69,35 @@ on:
         required: true
       ECR_FLOWCODE_SDLC_FC_DOCKER_SECRET:
         required: true
-      BUF_CICD_USER:
-        required: false
-      BUF_CICD_TOKEN:
-        required: false
       GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID:
         required: false
       GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
         required: false
       FLOWLYTICS_FC_GEOGRAPHY_CHART:
-        required: false
+        required: true
       AUTH_CACHE_REDIS_PASSWORD:
-        required: false
+        required: true
       GOOGLE_CLOUD_API_KEY:
-        required: false
+        required: true
       OPENSEA_API_KEY:
-        required: false
+        required: true
       OPTIMIZELY_SDK_KEY:
-        required: false
+        required: true
       RECAPTCHA_SITE_KEY:
-        required: false
+        required: true
       STRIPE_API_KEY:
-        required: false
+        required: true
       STRIPE_FLOW_STARTER_CHECKOUT_KEY:
-        required: false
+        required: true
       STRIPE_PRINT_STORE_CHECKOUT_KEY:
-        required: false
+        required: true
 
 permissions:
   id-token: write # Required for aws role assumption
 
 jobs:
   cd:
-    runs-on: [self-hosted, "${{ inputs.runner }}"]
+    runs-on: [self-hosted, '${{ inputs.runner }}']
     environment: preprod
     steps:
       - name: Setup Image Repository
