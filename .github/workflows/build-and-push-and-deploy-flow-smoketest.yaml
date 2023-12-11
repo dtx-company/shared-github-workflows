@@ -1,4 +1,4 @@
-name: build-and-push-and-deploy-flow
+name: build-and-push-and-deploy-flow-smoketest
 
 on:
   workflow_call:
@@ -62,15 +62,11 @@ on:
         default: '.next/static/.'
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
-        required: false
-      JFROG_FLOWCODE_FC_PYPI_USERNAME:
-        required: false
-      JFROG_FLOWCODE_FC_PYPI_PASSWORD:
-        required: false
+        required: true
       STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
-        required: false
+        required: true
       STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
-        required: false
+        required: true
       ECR_FLOWCODE_FC_DOCKER_SERVER:
         required: true
       ECR_FLOWCODE_FC_DOCKER_KEY:
@@ -78,9 +74,9 @@ on:
       ECR_FLOWCODE_FC_DOCKER_SECRET:
         required: true
       BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID:
-        required: false
+        required: true
       BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
-        required: false
+        required: true
       FLOWLYTICS_FC_GEOGRAPHY_CHART:
         required: true
       AUTH_CACHE_REDIS_PASSWORD:
@@ -123,18 +119,23 @@ jobs:
           image-tag: ${{ github.sha }}
           branch-name: ${{ github.head_ref || github.ref_name }}
           dockerfilepath: ${{ inputs.dockerfilepath }}
-          docker-build-args: ${{ inputs.docker-build-args }}
+          docker-build-args: |
+            ${{ inputs.docker-build-args }}
+            FLOWLYTICS_FC_GEOGRAPHY_CHART=${{ secrets.FLOWLYTICS_FC_GEOGRAPHY_CHART }}
+            AUTH_CACHE_REDIS_PASSWORD=${{ secrets.AUTH_CACHE_REDIS_PASSWORD }}
+            GOOGLE_CLOUD_API_KEY=${{ secrets.GOOGLE_CLOUD_API_KEY }}
+            OPENSEA_API_KEY=${{ secrets.OPENSEA_API_KEY }}
+            OPTIMIZELY_SDK_KEY=${{ secrets.OPTIMIZELY_SDK_KEY }}
+            RECAPTCHA_SITE_KEY=${{ secrets.RECAPTCHA_SITE_KEY }}
+            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+            STRIPE_FLOW_STARTER_CHECKOUT_KEY=${{ secrets.STRIPE_FLOW_STARTER_CHECKOUT_KEY }}
+            STRIPE_PRINT_STORE_CHECKOUT_KEY=${{ secrets.STRIPE_PRINT_STORE_CHECKOUT_KEY }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-          JFROG_FLOWCODE_FC_PYPI_USERNAME: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_USERNAME }}
-          JFROG_FLOWCODE_FC_PYPI_PASSWORD: ${{ secrets.JFROG_FLOWCODE_FC_PYPI_PASSWORD }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          BUF_CICD_USER: ${{ secrets.BUF_CICD_USER }}
-          BUF_CICD_TOKEN: ${{ secrets.BUF_CICD_TOKEN }}
           GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID }}
           GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
       - name: Extract flow-app assets
-        if: inputs.post-build-script != ''
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
           service: ${{ inputs.service }}
@@ -144,8 +145,6 @@ jobs:
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
           STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          upload-sourcemaps: ${{ inputs.upload-sourcemaps }}
-          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
           asset-path: ${{ inputs.asset-path }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
