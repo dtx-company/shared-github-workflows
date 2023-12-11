@@ -63,19 +63,9 @@ on:
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
-      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
+      GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID:
         required: true
-      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_SERVER:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_KEY:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_SECRET:
-        required: true
-      BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID:
-        required: true
-      BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
+      GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
         required: true
       FLOWLYTICS_FC_GEOGRAPHY_CHART:
         required: true
@@ -134,8 +124,8 @@ jobs:
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID }}
-          GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
+          GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_ACCESS_KEY_ID }}
+          GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY: ${{ secrets.GHA_ACTIONS_S3_CACHE_AWS_SECRET_ACCESS_KEY }}
       - name: Extract flow-app assets
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
