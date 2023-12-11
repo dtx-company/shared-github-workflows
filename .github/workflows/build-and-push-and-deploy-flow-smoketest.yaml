@@ -63,10 +63,6 @@ on:
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
-      BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID:
-        required: true
-      BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
-        required: true
       FLOWLYTICS_FC_GEOGRAPHY_CHART:
         required: true
       AUTH_CACHE_REDIS_PASSWORD:
