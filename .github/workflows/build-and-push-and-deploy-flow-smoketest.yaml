@@ -98,9 +98,9 @@ jobs:
         uses: dtx-company/shared-github-workflows/composite-actions/setup-image-repository@v1
         with:
           service: ${{ inputs.service }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
-          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SECRET }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_KEY: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SECRET: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SECRET }}
       - name: Setup Docker
         uses: dtx-company/shared-github-workflows/composite-actions/setup-docker@v1
       - name: Docker Build and Push
