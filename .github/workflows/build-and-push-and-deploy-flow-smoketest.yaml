@@ -63,10 +63,6 @@ on:
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
-      STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID:
-        required: true
-      STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY:
-        required: true
       ECR_FLOWCODE_FC_DOCKER_SERVER:
         required: true
       ECR_FLOWCODE_FC_DOCKER_KEY:
