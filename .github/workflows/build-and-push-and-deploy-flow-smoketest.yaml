@@ -63,12 +63,6 @@ on:
     secrets:
       PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD:
         required: true
-      ECR_FLOWCODE_FC_DOCKER_SERVER:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_KEY:
-        required: true
-      ECR_FLOWCODE_FC_DOCKER_SECRET:
-        required: true
       BUILD_ARTIFACTS_S3_CACHE_AWS_ACCESS_KEY_ID:
         required: true
       BUILD_ARTIFACTS_S3_CACHE_AWS_SECRET_ACCESS_KEY:
