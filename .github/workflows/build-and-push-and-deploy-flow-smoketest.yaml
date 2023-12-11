@@ -133,9 +133,9 @@ jobs:
           image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
           asset-path: ${{ inputs.asset-path }}
       - name: Update fc-infra-kubernetes
         uses: dtx-company/shared-github-workflows/composite-actions/update-infra-kubernetes@v1
@@ -148,4 +148,4 @@ jobs:
           clusters: ${{ inputs.clusters }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
-          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_FC_DOCKER_SERVER }}
+          ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
