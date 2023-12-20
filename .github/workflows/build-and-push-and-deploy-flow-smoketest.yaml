@@ -133,8 +133,8 @@ jobs:
           image-tag: ${{ github.sha }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
-          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PREPROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
-          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.PREPROD_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
+          STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.SMOKETEST_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
+          STATIC_ASSETS_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.SMOKETEST_STATIC_ASSETS_AWS_SECRET_ACCESS_KEY }}
           ECR_FLOWCODE_FC_DOCKER_SERVER: ${{ secrets.ECR_FLOWCODE_PROD_FC_DOCKER_SERVER }}
           asset-path: ${{ inputs.asset-path }}
       - name: Update fc-infra-kubernetes
