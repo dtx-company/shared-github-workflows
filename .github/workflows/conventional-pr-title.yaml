@@ -8,8 +8,7 @@ jobs:
     name: validate-pr-title
     runs-on: [self-hosted, fc-general]
     steps:
-      # Configuration docs: https://github.com/marketplace/actions/semantic-pull-request#configuration
-      - uses: amannn/action-semantic-pull-request@v4
+      - uses: amannn/action-semantic-pull-request@v5
         with:
           types: |
             build
@@ -23,6 +22,4 @@ jobs:
             revert
             test
         env:
-          # GITHUB_TOKEN is available automatically.
-          # See https://github.blog/changelog/2021-04-20-github-actions-control-permissions-for-github_token/#:~:text=GitHub%20Actions%20now%20lets%20you,token%20when%20a%20job%20completes.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
