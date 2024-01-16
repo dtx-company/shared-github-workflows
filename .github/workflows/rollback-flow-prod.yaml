@@ -17,7 +17,7 @@ on:
         required: true
         type: string
       image-tag:
-        required: false
+        required: true
         type: string
       clusters:
         required: false
@@ -81,7 +81,7 @@ jobs:
         uses: dtx-company/shared-github-workflows/composite-actions/extract-and-upload-static-assets-flow@v1
         with:
           service: ${{ inputs.service }}
-          image-tag: ${{ github.sha }}
+          image-tag: ${{ inputs.image-tag }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           post-build-script-inputs: ${{ inputs.post-build-script-inputs }}
           STATIC_ASSETS_S3_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_STATIC_ASSETS_AWS_ACCESS_KEY_ID }}
@@ -97,7 +97,7 @@ jobs:
           project: ${{ inputs.project }}
           awsenvs: ${{ inputs.awsenvs }}
           extra-deployments: ${{ inputs.extra-deployments }}
-          image-tag: ${{ github.sha }}
+          image-tag: ${{ inputs.image-tag }}
           clusters: ${{ inputs.clusters }}
           ecr-image-path: ${{ inputs.ecr-image-path }}
           PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB_WORKFLOWS_CICD }}
